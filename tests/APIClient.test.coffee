@@ -45,3 +45,42 @@ describe "APIClient", ->
 			new APIClient xmlrpc, options
 
 			expect(createClientStub).to.have.been.calledWith(options)
+
+	describe "request", ->
+		apiClient = undefined
+		methodCallStub = undefined
+
+		beforeEach ->
+			options =
+				host: "testHost"
+				port: 80
+
+			methodCallStub = sinon.stub xmlrpcclient, "methodCall", (method, args, cb) ->
+				cb null, {Value: ""}
+
+			apiClient = new APIClient xmlrpc, options
+
+		afterEach ->
+			methodCallStub.restore()
+
+		it "should pass on provided parameters to xmlrpc client", ->
+			methodName = "testModule.testMethod"
+			methodArgs = ["arrayArg1", "arrayArg2"]
+
+			apiClient.request methodName, methodArgs
+
+			expect(methodCallStub).to.have.been.calledWith(methodName, methodArgs)
+
+		it "should resolve on successful requests", (done) ->
+			promise = apiClient.request()
+
+			expect(promise).to.eventually.be.fulfilled.and.notify done
+
+		it "should reject on failed requests", (done) ->
+			methodCallStub.restore()
+			methodCallStub = sinon.stub xmlrpcclient, "methodCall", (method, args, cb) ->
+				cb { error: "" }, null
+
+			promise = apiClient.request()
+
+			expect(promise).to.eventually.be.rejected.and.notify done

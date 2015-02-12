@@ -18,3 +18,12 @@ class module.exports
 			throw Error "Must provide `port` in options"
 
 		@client = xmlrpc.createClient @options
+
+	request: (method, args) =>
+		debug "request()"
+		new Promise (resolve, reject) =>
+			@client.methodCall method, args, (error, value) =>
+				if error
+					reject error
+				else
+					resolve value.Value
