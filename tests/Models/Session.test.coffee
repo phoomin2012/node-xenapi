@@ -98,3 +98,5 @@ describe "Session", ->
 			session.login().then ->
 				promise = session.logout()
 				expect(promise).to.eventually.be.fulfilled.and.notify done
+			.catch (e) ->
+				done e

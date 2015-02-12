@@ -129,6 +129,8 @@
           var promise;
           promise = session.logout();
           return expect(promise).to.eventually.be.fulfilled.and.notify(done);
+        })["catch"](function(e) {
+          return done(e);
         });
       });
     });
