@@ -7,6 +7,20 @@ class module.exports
 		unless @apiClient
 			throw Error "Must provide apiClient"
 
-	logout: =>
+		@loggedIn = false
+
+	login: (username, password) =>
+		debug "login()"
 		new Promise (resolve, reject) =>
-			reject()
+			unless @loggedIn
+				@apiClient.request("session.login_with_password", [username, password]).then (value) =>
+					debug "login Completed"
+					@loggedIn = true
+					@sessionID = value
+					resolve()
+				.catch =>
+					debug "login Failed"
+					reject()
+			else
+				debug "already logged in"
+				reject()
