@@ -1,4 +1,5 @@
 debug = require('debug') 'APIClient'
+Promise = require 'bluebird'
 
 class module.exports
 	constructor: (xmlrpc, @options) ->
@@ -9,3 +10,11 @@ class module.exports
 
 		unless @options
 			throw Error "Must provide options"
+
+		unless @options.host
+			throw Error "Must provide `host` in options"
+
+		unless @options.port
+			throw Error "Must provide `port` in options"
+
+		@client = xmlrpc.createClient @options
