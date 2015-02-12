@@ -35,7 +35,12 @@
     describe("constructor", function() {
       var createClientStub;
       createClientStub = null;
-      after(function() {
+      beforeEach(function() {
+        return createClientStub = sinon.stub(xmlrpc, "createClient", function() {
+          return null;
+        });
+      });
+      afterEach(function() {
         return createClientStub.restore();
       });
       it("should throw unless xmlrpc is provided", function() {
@@ -62,9 +67,6 @@
       });
       return it("should construct an xmlrpc-client using provided options", function() {
         var options;
-        createClientStub = sinon.stub(xmlrpc, "createClient", function() {
-          return null;
-        });
         options = {
           host: "testHost",
           port: 80

@@ -24,7 +24,11 @@ describe "APIClient", ->
 	describe "constructor", ->
 		createClientStub = null
 
-		after ->
+		beforeEach ->
+			createClientStub = sinon.stub xmlrpc, "createClient", ->
+				return null
+
+		afterEach ->
 			createClientStub.restore()
 
 		it "should throw unless xmlrpc is provided", ->
@@ -40,9 +44,6 @@ describe "APIClient", ->
 			expect(-> new APIClient xmlrpc, { host: "test" }).to.throw /Must provide `port` in options/
 
 		it "should construct an xmlrpc-client using provided options", ->
-			createClientStub = sinon.stub xmlrpc, "createClient", ->
-				return null
-
 			options =
 				host: "testHost"
 				port: 80
