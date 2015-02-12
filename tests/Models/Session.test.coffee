@@ -50,3 +50,51 @@ describe "Session", ->
 				expect(promise).to.eventually.be.rejected.and.notify done
 			.catch (e) ->
 				done e
+
+	describe "logout", ->
+		session = undefined
+		requestStub = undefined
+
+		beforeEach ->
+			requestStub = sinon.stub apiClient, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+			session = new Session apiClient
+
+		afterEach ->
+			requestStub.restore()
+
+		it "should reject if not currently logged in", (done) ->
+			promise = session.logout()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should call `session.logout` from the API if currently logged in", (done) ->
+			session.login().then ->
+				session.logout().finally ->
+					expect(requestStub).to.have.been.calledWith "session.logout"
+					done()
+				.catch (e) ->
+					done e
+
+		it "should pass the session ref from `login` to the API", (done) ->
+			sessionRef = "abcd1234"
+			requestStub.restore()
+			requestStub = sinon.stub apiClient, "request", (method) ->
+				new Promise (resolve, reject) ->
+					unless method == "logout"
+						resolve(sessionRef)
+					else
+						resolve()
+
+			session.login().then ->
+				session.logout().finally ->
+					expect(requestStub).to.have.been.calledWith "session.logout", [sessionRef]
+					done()
+				.catch (e) ->
+					done e
+
+		it "should resolve when logout is complete", (done) ->
+			session.login().then ->
+				promise = session.logout()
+				expect(promise).to.eventually.be.fulfilled.and.notify done
