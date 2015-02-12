@@ -9,9 +9,13 @@ chai.use sinonChai
 chai.use chaiAsPromised
 
 describe "Session", ->
-	Session = require '../../lib/Models/Session'
-	apiClient =
-		request: ->
+	Session = undefined
+	apiClient = undefined
+
+	beforeEach ->
+		Session = require '../../lib/Models/Session'
+		apiClient =
+			request: ->
 
 	describe "constructor", ->
 		it "should throw unless apiClient is provided", ->

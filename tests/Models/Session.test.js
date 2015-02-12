@@ -20,10 +20,14 @@
 
   describe("Session", function() {
     var Session, apiClient;
-    Session = require('../../lib/Models/Session');
-    apiClient = {
-      request: function() {}
-    };
+    Session = void 0;
+    apiClient = void 0;
+    beforeEach(function() {
+      Session = require('../../lib/Models/Session');
+      return apiClient = {
+        request: function() {}
+      };
+    });
     describe("constructor", function() {
       return it("should throw unless apiClient is provided", function() {
         return expect(function() {

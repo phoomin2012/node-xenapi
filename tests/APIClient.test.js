@@ -18,15 +18,20 @@
 
   describe("APIClient", function() {
     var APIClient, xmlrpc, xmlrpcclient;
-    xmlrpc = {
-      createClient: function() {
-        return xmlrpcclient;
-      }
-    };
-    xmlrpcclient = {
-      methodCall: function() {}
-    };
-    APIClient = require('../lib/APIClient');
+    xmlrpc = void 0;
+    xmlrpcclient = void 0;
+    APIClient = void 0;
+    beforeEach(function() {
+      xmlrpc = {
+        createClient: function() {
+          return xmlrpcclient;
+        }
+      };
+      xmlrpcclient = {
+        methodCall: function() {}
+      };
+      return APIClient = require('../lib/APIClient');
+    });
     describe("constructor", function() {
       var createClientStub;
       createClientStub = null;

@@ -8,13 +8,18 @@ chai.use sinonChai
 chai.use chaiAsPromised
 
 describe "APIClient", ->
-	xmlrpc =
-		createClient: ->
-			return xmlrpcclient
-	xmlrpcclient =
-		methodCall: ->
+	xmlrpc = undefined
+	xmlrpcclient = undefined
+	APIClient = undefined
 
-	APIClient = require '../lib/APIClient'
+	beforeEach ->
+		xmlrpc =
+			createClient: ->
+				return xmlrpcclient
+		xmlrpcclient =
+			methodCall: ->
+
+		APIClient = require '../lib/APIClient'
 
 	describe "constructor", ->
 		createClientStub = null
