@@ -39,3 +39,20 @@ class module.exports
 				.catch =>
 					debug "logout Failed"
 					reject()
+
+	request: (method, args) =>
+		debug "request()"
+
+		unless @loggedIn
+			debug "not logged in"
+			throw Error "Must be logged in to make API requests."
+
+		unless args
+			args = []
+
+		new Promise (resolve, reject) =>
+			args.unshift @sessionID
+			@apiClient.request(method, args).then (value) =>
+				resolve value
+			.catch (e) =>
+				reject e
