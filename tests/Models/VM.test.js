@@ -32,7 +32,7 @@
       var key, validVM;
       validVM = void 0;
       key = void 0;
-      before(function() {
+      beforeEach(function() {
         validVM = {
           uuid: 'abcd',
           is_a_template: false,
@@ -40,7 +40,6 @@
         };
         return key = 'OpaqueRef:abcd';
       });
-      beforeEach(function() {});
       afterEach(function() {});
       it("should throw unless session is provided", function() {
         return expect(function() {
@@ -52,7 +51,7 @@
           return new VM(session);
         }).to["throw"](/Must provide `vm`/);
       });
-      it("should throw if vm does nto have a UUID", function() {
+      it("should throw if vm does not have a UUID", function() {
         return expect(function() {
           return new VM(session, {
             is_a_template: false,

@@ -22,14 +22,12 @@ describe "VM", ->
 		validVM = undefined
 		key = undefined
 
-		before ->
+		beforeEach ->
 			validVM = 
 				uuid: 'abcd',
 				is_a_template: false,
 				is_control_domain: false
 			key = 'OpaqueRef:abcd'
-
-		beforeEach ->
 
 		afterEach ->
 
@@ -39,7 +37,7 @@ describe "VM", ->
 		it "should throw unless vm is provided", ->
 			expect(-> new VM session).to.throw /Must provide `vm`/
 
-		it "should throw if vm does nto have a UUID", ->
+		it "should throw if vm does not have a UUID", ->
 			expect(-> new VM session, { is_a_template: false, is_control_domain: false }).to.throw /`vm` does not describe a valid VM/
 
 		it "should throw if vm is a template", ->
