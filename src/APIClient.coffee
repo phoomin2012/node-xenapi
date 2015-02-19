@@ -20,7 +20,7 @@ class module.exports
 		@client = xmlrpc.createClient @options
 
 	request: (method, args) =>
-		debug "request()"
+		debug "request(#{method}, #{args})"
 		new Promise (resolve, reject) =>
 			@client.methodCall method, args, (error, value) =>
 				if error

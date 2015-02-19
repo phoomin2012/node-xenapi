@@ -41,7 +41,7 @@ class module.exports
 					reject()
 
 	request: (method, args) =>
-		debug "request()"
+		debug "request(#{method}, #{args})"
 
 		unless @loggedIn
 			debug "not logged in"
