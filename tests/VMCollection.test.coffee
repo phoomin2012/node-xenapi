@@ -36,9 +36,9 @@ describe "VMCollection", ->
 		beforeEach ->
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
-					resolve()
+					resolve([])
 
-			vmCollection = new VMCollection session, {}
+			vmCollection = new VMCollection session, ->
 
 		afterEach ->
 			requestStub.restore()
@@ -54,6 +54,16 @@ describe "VMCollection", ->
 			promise = vmCollection.list()
 
 			expect(promise).to.eventually.be.fulfilled.and.notify done
+
+		it "should reject if the API call resolves with undefined", (done) ->
+			requestStub.restore()
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+
+			promise = vmCollection.list()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
 
 		it "should reject if the API call fails", (done) ->
 			requestStub.restore()
@@ -107,7 +117,7 @@ describe "VMCollection", ->
 					resolve([validVM])
 
 			vmCollection.list().then (vms) ->
-				expect(vms).to.deep.equal([validVM])
+				expect(vms.length).to.equal(1)
 				done()
 			.catch (e) ->
 				done e
