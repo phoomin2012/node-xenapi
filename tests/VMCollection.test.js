@@ -49,10 +49,10 @@
       beforeEach(function() {
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
-            return resolve();
+            return resolve([]);
           });
         });
-        return vmCollection = new VMCollection(session, {});
+        return vmCollection = new VMCollection(session, function() {});
       });
       afterEach(function() {
         return requestStub.restore();
@@ -69,6 +69,17 @@
         var promise;
         promise = vmCollection.list();
         return expect(promise).to.eventually.be.fulfilled.and.notify(done);
+      });
+      it("should reject if the API call resolves with undefined", function(done) {
+        var promise;
+        requestStub.restore();
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve();
+          });
+        });
+        promise = vmCollection.list();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
       });
       it("should reject if the API call fails", function(done) {
         var promise;
@@ -138,7 +149,7 @@
           });
         });
         return vmCollection.list().then(function(vms) {
-          expect(vms).to.deep.equal([validVM]);
+          expect(vms.length).to.equal(1);
           return done();
         })["catch"](function(e) {
           return done(e);
