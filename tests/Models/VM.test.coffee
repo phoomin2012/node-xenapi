@@ -24,8 +24,8 @@ describe "VM", ->
 
 		beforeEach ->
 			validVM = 
-				uuid: 'abcd',
-				is_a_template: false,
+				uuid: 'abcd'
+				is_a_template: false
 				is_control_domain: false
 			key = 'OpaqueRef:abcd'
 
