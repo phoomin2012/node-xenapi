@@ -37,3 +37,15 @@ class module.exports
 			PAUSED: 'Paused',
 			RUNNING: 'Running',
 			SUSPENDED: 'Suspended'
+
+	refreshPowerState: =>
+		debug "refreshPowerState()"
+
+		new Promise (resolve, reject) =>
+			session.request("VM.get_power_state", [key]).then (value) =>
+				debug value
+				@powerState = value
+				resolve value
+			.catch (e) ->
+				debug e
+				reject e

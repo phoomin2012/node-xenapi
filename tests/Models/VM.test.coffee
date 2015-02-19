@@ -93,3 +93,75 @@ describe "VM", ->
 			vm = new VM session, vmTemplate, key
 
 			expect(vm.powerState).to.equal(vmTemplate.power_state)
+
+	describe "refreshPowerState()", ->
+		key = undefined
+		vm = undefined
+		requestStub = undefined
+
+		beforeEach ->
+			validVM =
+				uuid: 'abcd'
+				is_a_template: false
+				is_control_domain: false
+			key = 'OpaqueRef:abcd'
+
+			vm = new VM session, validVM, key
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+
+		afterEach ->
+
+		it "should call VM.get_power_state on the API", (done) ->
+			vm.refreshPowerState().then ->
+				expect(requestStub).to.have.been.calledWith "VM.get_power_state"
+				done()
+			.catch (e) ->
+				done e
+
+		it "should pass the OpaqueRef of the VM to the API", (done) ->
+			vm.refreshPowerState().then ->
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				done()
+			.catch (e) ->
+				done e
+
+		it "should reject if the API call fails", (done) ->
+			requestStub.restore()
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					reject()
+
+			promise = vm.refreshPowerState()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should resolve if the API call is successfull", (done) ->
+			promise = vm.refreshPowerState()
+
+			expect(promise).to.eventually.be.fulfilled.and.notify done
+
+		it "should resolve with the latest power state of the VM", (done) ->
+			requestStub.restore()
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve("Suspended")
+
+			vm.refreshPowerState().then (powerState) ->
+				expect(powerState).to.equal("Suspended")
+				done()
+			.catch (e) ->
+				done e
+
+		it "should update the VM to the latest power state", (done) ->
+			requestStub.restore()
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve("Suspended")
+
+			vm.refreshPowerState().then () ->
+				expect(vm.powerState).to.equal("Suspended")
+				done()
+			.catch (e) ->
+				done e
