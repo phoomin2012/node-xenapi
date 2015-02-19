@@ -19,14 +19,16 @@
   chai.use(chaiAsPromised);
 
   describe("VMCollection", function() {
-    var VMCollection, session;
+    var VM, VMCollection, session;
     session = void 0;
     VMCollection = void 0;
+    VM = void 0;
     beforeEach(function() {
       session = {
         request: function() {}
       };
-      return VMCollection = require('../lib/VMCollection');
+      VMCollection = require('../lib/VMCollection');
+      return VM = require('../lib/Models/VM');
     });
     describe("constructor", function() {
       beforeEach(function() {});
@@ -52,7 +54,7 @@
             return resolve([]);
           });
         });
-        return vmCollection = new VMCollection(session, function() {});
+        return vmCollection = new VMCollection(session, VM);
       });
       afterEach(function() {
         return requestStub.restore();
@@ -136,20 +138,46 @@
           return done(e);
         });
       });
-      return it("should return VMs that are not templates or control domains", function(done) {
+      it("should return VMs that are not templates or control domains", function(done) {
         var validVM;
         validVM = {
+          uuid: 'abcd',
           is_control_domain: false,
           is_a_template: false
         };
         requestStub.restore();
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
-            return resolve([validVM]);
+            return resolve({
+              'abcd': validVM
+            });
           });
         });
         return vmCollection.list().then(function(vms) {
           expect(vms.length).to.equal(1);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      return it("should return instances of VM", function(done) {
+        var validVM;
+        validVM = {
+          uuid: 'abcd',
+          is_control_domain: false,
+          is_a_template: false
+        };
+        requestStub.restore();
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve({
+              'abcd': validVM
+            });
+          });
+        });
+        return vmCollection.list().then(function(vms) {
+          expect(vms[0]).to.be.an["instanceof"](VM);
+          expect(vms[0]).to.not.be.an["instanceof"](VMCollection);
           return done();
         })["catch"](function(e) {
           return done(e);
