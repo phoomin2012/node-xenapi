@@ -18,9 +18,9 @@ class module.exports
 					@loggedIn = true
 					@sessionID = value
 					resolve()
-				.catch =>
+				.catch (e) =>
 					debug "login Failed"
-					reject()
+					reject e
 			else
 				debug "already logged in"
 				reject()
