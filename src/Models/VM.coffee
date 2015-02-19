@@ -5,7 +5,6 @@ class module.exports
 	key = undefined
 	session = undefined
 	vm = undefined
-	VM = undefined
 
 	constructor: (_session, _vm, _key) ->
 		debug "constructor()"
