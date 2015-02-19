@@ -142,3 +142,19 @@ describe "VMCollection", ->
 				done()
 			.catch (e) ->
 				done e
+		it "should return instances of VM with details set up", (done) ->
+			validVM =
+				uuid: 'abcd'
+				is_control_domain: false
+				is_a_template: false
+
+			requestStub.restore()
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve({ 'abcd': validVM })
+
+			vmCollection.list().then (vms) ->
+				expect(vms[0].uuid).to.equal(validVM.uuid)
+				done()
+			.catch (e) ->
+				done e
