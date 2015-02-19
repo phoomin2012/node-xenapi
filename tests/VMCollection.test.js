@@ -160,7 +160,7 @@
           return done(e);
         });
       });
-      return it("should return instances of VM", function(done) {
+      it("should return instances of VM", function(done) {
         var validVM;
         validVM = {
           uuid: 'abcd',
@@ -178,6 +178,28 @@
         return vmCollection.list().then(function(vms) {
           expect(vms[0]).to.be.an["instanceof"](VM);
           expect(vms[0]).to.not.be.an["instanceof"](VMCollection);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      return it("should return instances of VM with details set up", function(done) {
+        var validVM;
+        validVM = {
+          uuid: 'abcd',
+          is_control_domain: false,
+          is_a_template: false
+        };
+        requestStub.restore();
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve({
+              'abcd': validVM
+            });
+          });
+        });
+        return vmCollection.list().then(function(vms) {
+          expect(vms[0].uuid).to.equal(validVM.uuid);
           return done();
         })["catch"](function(e) {
           return done(e);
