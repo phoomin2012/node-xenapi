@@ -11,12 +11,14 @@ chai.use chaiAsPromised
 describe "VMCollection", ->
 	session = undefined
 	VMCollection = undefined
+	VM = undefined
 
 	beforeEach ->
 		session =
 			request: ->
 
 		VMCollection = require '../lib/VMCollection'
+		VM = require '../lib/Models/VM'
 
 	describe "constructor", ->
 		beforeEach ->
@@ -38,7 +40,7 @@ describe "VMCollection", ->
 				new Promise (resolve, reject) ->
 					resolve([])
 
-			vmCollection = new VMCollection session, ->
+			vmCollection = new VMCollection session, VM
 
 		afterEach ->
 			requestStub.restore()
@@ -108,16 +110,35 @@ describe "VMCollection", ->
 
 		it "should return VMs that are not templates or control domains", (done) ->
 			validVM =
+				uuid: 'abcd'
 				is_control_domain: false
 				is_a_template: false
 
 			requestStub.restore()
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
-					resolve([validVM])
+					resolve({ 'abcd': validVM })
 
 			vmCollection.list().then (vms) ->
 				expect(vms.length).to.equal(1)
+				done()
+			.catch (e) ->
+				done e
+
+		it "should return instances of VM", (done) ->
+			validVM =
+				uuid: 'abcd'
+				is_control_domain: false
+				is_a_template: false
+
+			requestStub.restore()
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve({ 'abcd': validVM })
+
+			vmCollection.list().then (vms) ->
+				expect(vms[0]).to.be.an.instanceof(VM)
+				expect(vms[0]).to.not.be.an.instanceof(VMCollection)
 				done()
 			.catch (e) ->
 				done e
