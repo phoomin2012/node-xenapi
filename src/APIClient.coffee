@@ -26,4 +26,5 @@ class module.exports
 				if error
 					reject error
 				else
+					debug value
 					resolve value.Value
