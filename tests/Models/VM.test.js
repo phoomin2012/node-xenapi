@@ -235,7 +235,7 @@
       });
       it("should initially refresh the powerState of the VM", function(done) {
         return vm.pause().then(function() {
-          expect(refreshPowerStateStub).to.have.been.called;
+          expect(refreshPowerStateStub).to.have.been.calledOnce;
           return done();
         })["catch"](function(e) {
           return done(e);
@@ -328,7 +328,7 @@
       });
       it("should initially refresh the powerState of the VM", function(done) {
         return vm.unpause().then(function() {
-          expect(refreshPowerStateStub).to.have.been.called;
+          expect(refreshPowerStateStub).to.have.been.calledOnce;
           return done();
         })["catch"](function(e) {
           return done(e);
@@ -421,7 +421,7 @@
       });
       it("should initially refresh the powerState of the VM", function(done) {
         return vm.suspend().then(function() {
-          expect(refreshPowerStateStub).to.have.been.called;
+          expect(refreshPowerStateStub).to.have.been.calledOnce;
           return done();
         })["catch"](function(e) {
           return done(e);
@@ -514,7 +514,7 @@
       });
       it("should initially refresh the powerState of the VM", function(done) {
         return vm.resume().then(function() {
-          expect(refreshPowerStateStub).to.have.been.called;
+          expect(refreshPowerStateStub).to.have.been.calledOnce;
           return done();
         })["catch"](function(e) {
           return done(e);

@@ -193,7 +193,7 @@ describe "VM", ->
 
 		it "should initially refresh the powerState of the VM", (done) ->
 			vm.pause().then ->
-				expect(refreshPowerStateStub).to.have.been.called
+				expect(refreshPowerStateStub).to.have.been.calledOnce
 				done()
 			.catch (e) ->
 				done e
@@ -274,7 +274,7 @@ describe "VM", ->
 
 		it "should initially refresh the powerState of the VM", (done) ->
 			vm.unpause().then ->
-				expect(refreshPowerStateStub).to.have.been.called
+				expect(refreshPowerStateStub).to.have.been.calledOnce
 				done()
 			.catch (e) ->
 				done e
@@ -355,7 +355,7 @@ describe "VM", ->
 
 		it "should initially refresh the powerState of the VM", (done) ->
 			vm.suspend().then ->
-				expect(refreshPowerStateStub).to.have.been.called
+				expect(refreshPowerStateStub).to.have.been.calledOnce
 				done()
 			.catch (e) ->
 				done e
@@ -436,7 +436,7 @@ describe "VM", ->
 
 		it "should initially refresh the powerState of the VM", (done) ->
 			vm.resume().then ->
-				expect(refreshPowerStateStub).to.have.been.called
+				expect(refreshPowerStateStub).to.have.been.calledOnce
 				done()
 			.catch (e) ->
 				done e
