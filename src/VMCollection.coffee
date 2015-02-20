@@ -1,0 +1,36 @@
+debug = require('debug') 'XenAPI:VMCollection'
+Promise = require 'bluebird'
+_ = require 'lodash'
+
+class module.exports
+	session = undefined
+	VM = undefined
+
+	constructor: (_session, _VM) ->
+		debug "constructor()"
+		unless _session
+			throw Error "Must provide session"
+		else
+			session = _session
+
+		unless _VM
+			throw Error "Must provide VM"
+		else
+			VM = _VM
+
+	list: =>
+		debug "list()"
+		new Promise (resolve, reject) =>
+			session.request("VM.get_all_records").then (value) =>
+				unless value
+					reject()
+				debug "Received #{Object.keys(value).length} records"
+				createVMInstance = (vm, key) =>
+					if !vm.is_a_template && !vm.is_control_domain
+						return new VM session, vm, key
+
+				VMs = _.map value, createVMInstance
+				resolve _.filter VMs, (vm) -> vm
+			.catch (e) ->
+				debug e
+				reject e
