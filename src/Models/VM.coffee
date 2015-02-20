@@ -49,3 +49,70 @@ class module.exports
 			.catch (e) ->
 				debug e
 				reject e
+
+	pause: =>
+		debug "pause()"
+		new Promise (resolve, reject) =>
+			@refreshPowerState().then (currentPowerState) =>
+				unless currentPowerState == @POWER_STATES.RUNNING
+					reject "VM not in #{@POWER_STATES.RUNNING} power state."
+				else
+					session.request("VM.pause", [key]).then (value) =>
+						resolve()
+					.catch (e) ->
+						debug e
+						reject e
+			.catch (e) ->
+				debug e
+				reject e
+
+	unpause: =>
+		debug "unpause()"
+		new Promise (resolve, reject) =>
+			@refreshPowerState().then (currentPowerState) =>
+				unless currentPowerState == @POWER_STATES.PAUSED
+					reject "VM not in #{@POWER_STATES.PAUSED} power state."
+				else
+					session.request("VM.unpause", [key]).then (value) =>
+						resolve()
+					.catch (e) ->
+						debug e
+						reject e
+			.catch (e) ->
+				debug e
+				reject e
+
+	suspend: =>
+		debug "suspend()"
+		new Promise (resolve, reject) =>
+			@refreshPowerState().then (currentPowerState) =>
+				unless currentPowerState == @POWER_STATES.RUNNING
+					reject "VM not in #{@POWER_STATES.RUNNING} power state."
+				else
+					session.request("VM.suspend", [key]).then (value) =>
+						resolve()
+					.catch (e) ->
+						debug e
+						reject e
+			.catch (e) ->
+				debug e
+				reject e
+
+	resume: =>
+		debug "resume()"
+		new Promise (resolve, reject) =>
+			@refreshPowerState().then (currentPowerState) =>
+				unless currentPowerState == @POWER_STATES.SUSPENDED
+					reject "VM not in #{@POWER_STATES.SUSPENDED} power state."
+				else
+					startPaused = false
+					force = false
+
+					session.request("VM.resume", [key, startPaused, force]).then (value) =>
+						resolve()
+					.catch (e) ->
+						debug e
+						reject e
+			.catch (e) ->
+				debug e
+				reject e

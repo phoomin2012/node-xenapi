@@ -165,3 +165,341 @@ describe "VM", ->
 				done()
 			.catch (e) ->
 				done e
+
+	describe "pause()", ->
+		key = undefined
+		vm = undefined
+		requestStub = undefined
+		refreshPowerStateStub = undefined
+
+		beforeEach ->
+			validVM =
+				uuid: 'abcd'
+				is_a_template: false
+				is_control_domain: false
+			key = 'OpaqueRef:abcd'
+
+			vm = new VM session, validVM, key
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Running")
+
+		afterEach ->
+			requestStub.restore()
+			refreshPowerStateStub.restore()
+
+		it "should initially refresh the powerState of the VM", (done) ->
+			vm.pause().then ->
+				expect(refreshPowerStateStub).to.have.been.called
+				done()
+			.catch (e) ->
+				done e
+
+		it "should reject if the powerState of the VM is `Paused`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Paused")
+
+			promise = vm.pause()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Suspended`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Suspended")
+
+			promise = vm.pause()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Halted`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Halted")
+
+			promise = vm.pause()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should resolve if the powerState of the VM is `Running`", (done) ->
+			promise = vm.pause()
+
+			expect(promise).to.eventually.be.fulfilled.and.notify done
+
+		it "should call `VM.pause` on the API", (done) ->
+			vm.pause().then ->
+				expect(requestStub).to.have.been.calledWith "VM.pause"
+				done()
+			.catch (e) ->
+				done e
+
+		it "should pass OpaqueRef for the VM to the API", (done) ->
+			vm.pause().then ->
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				done()
+			.catch (e) ->
+				done e
+
+	describe "unpause()", ->
+		key = undefined
+		vm = undefined
+		requestStub = undefined
+		refreshPowerStateStub = undefined
+
+		beforeEach ->
+			validVM =
+				uuid: 'abcd'
+				is_a_template: false
+				is_control_domain: false
+			key = 'OpaqueRef:abcd'
+
+			vm = new VM session, validVM, key
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Paused")
+
+		afterEach ->
+			requestStub.restore()
+			refreshPowerStateStub.restore()
+
+		it "should initially refresh the powerState of the VM", (done) ->
+			vm.unpause().then ->
+				expect(refreshPowerStateStub).to.have.been.called
+				done()
+			.catch (e) ->
+				done e
+
+		it "should reject if the powerState of the VM is `Running`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Running")
+
+			promise = vm.unpause()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Suspended`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Suspended")
+
+			promise = vm.unpause()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Halted`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Halted")
+
+			promise = vm.unpause()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should resolve if the powerState of the VM is `Paused`", (done) ->
+			promise = vm.unpause()
+
+			expect(promise).to.eventually.be.fulfilled.and.notify done
+
+		it "should call `VM.unpause` on the API", (done) ->
+			vm.unpause().then ->
+				expect(requestStub).to.have.been.calledWith "VM.unpause"
+				done()
+			.catch (e) ->
+				done e
+
+		it "should pass OpaqueRef for the VM to the API", (done) ->
+			vm.unpause().then ->
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				done()
+			.catch (e) ->
+				done e
+
+	describe "suspend()", ->
+		key = undefined
+		vm = undefined
+		requestStub = undefined
+		refreshPowerStateStub = undefined
+
+		beforeEach ->
+			validVM =
+				uuid: 'abcd'
+				is_a_template: false
+				is_control_domain: false
+			key = 'OpaqueRef:abcd'
+
+			vm = new VM session, validVM, key
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Running")
+
+		afterEach ->
+			requestStub.restore()
+			refreshPowerStateStub.restore()
+
+		it "should initially refresh the powerState of the VM", (done) ->
+			vm.suspend().then ->
+				expect(refreshPowerStateStub).to.have.been.called
+				done()
+			.catch (e) ->
+				done e
+
+		it "should reject if the powerState of the VM is `Paused`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Paused")
+
+			promise = vm.suspend()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Suspended`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Suspended")
+
+			promise = vm.suspend()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Halted`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Halted")
+
+			promise = vm.suspend()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should resolve if the powerState of the VM is `Running`", (done) ->
+			promise = vm.suspend()
+
+			expect(promise).to.eventually.be.fulfilled.and.notify done
+
+		it "should call `VM.suspend` on the API", (done) ->
+			vm.suspend().then ->
+				expect(requestStub).to.have.been.calledWith "VM.suspend"
+				done()
+			.catch (e) ->
+				done e
+
+		it "should pass OpaqueRef for the VM to the API", (done) ->
+			vm.suspend().then ->
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				done()
+			.catch (e) ->
+				done e
+
+	describe "resume()", ->
+		key = undefined
+		vm = undefined
+		requestStub = undefined
+		refreshPowerStateStub = undefined
+
+		beforeEach ->
+			validVM =
+				uuid: 'abcd'
+				is_a_template: false
+				is_control_domain: false
+			key = 'OpaqueRef:abcd'
+
+			vm = new VM session, validVM, key
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Suspended")
+
+		afterEach ->
+			requestStub.restore()
+			refreshPowerStateStub.restore()
+
+		it "should initially refresh the powerState of the VM", (done) ->
+			vm.resume().then ->
+				expect(refreshPowerStateStub).to.have.been.called
+				done()
+			.catch (e) ->
+				done e
+
+		it "should reject if the powerState of the VM is `Paused`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Paused")
+
+			promise = vm.resume()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Running`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Running")
+
+			promise = vm.resume()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should reject if the powerState of the VM is `Halted`", (done) ->
+			refreshPowerStateStub.restore()
+			refreshPowerStateStub = sinon.stub vm, "refreshPowerState", ->
+				new Promise (resolve, reject) ->
+					resolve("Halted")
+
+			promise = vm.resume()
+
+			expect(promise).to.eventually.be.rejected.and.notify done
+
+		it "should resolve if the powerState of the VM is `Suspended`", (done) ->
+			promise = vm.resume()
+
+			expect(promise).to.eventually.be.fulfilled.and.notify done
+
+		it "should call `VM.resume` on the API", (done) ->
+			vm.resume().then ->
+				expect(requestStub).to.have.been.calledWith "VM.resume"
+				done()
+			.catch (e) ->
+				done e
+
+		it "should pass OpaqueRef for the VM to the API", (done) ->
+			vm.resume().then ->
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [key, sinon.match.any, sinon.match.any]
+				done()
+			.catch (e) ->
+				done e
+
+		it "should pass `false` as the default value for `start_paused` to the API", (done) ->
+			vm.resume().then ->
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [sinon.match.any, false, sinon.match.any]
+				done()
+			.catch (e) ->
+				done e
+
+		it "should pass `false` as the default value for `force` to the API", (done) ->
+			vm.resume().then ->
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [sinon.match.any, sinon.match.any, false]
+				done()
+			.catch (e) ->
+				done e
