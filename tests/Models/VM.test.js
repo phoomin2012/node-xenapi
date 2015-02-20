@@ -28,7 +28,7 @@
       };
       return VM = require('../../lib/Models/VM');
     });
-    return describe("constructor", function() {
+    describe("constructor", function() {
       var key, validVM;
       validVM = void 0;
       key = void 0;
@@ -119,6 +119,476 @@
         vmTemplate.power_state = 'abcd';
         vm = new VM(session, vmTemplate, key);
         return expect(vm.powerState).to.equal(vmTemplate.power_state);
+      });
+    });
+    describe("refreshPowerState()", function() {
+      var key, requestStub, vm;
+      key = void 0;
+      vm = void 0;
+      requestStub = void 0;
+      beforeEach(function() {
+        var validVM;
+        validVM = {
+          uuid: 'abcd',
+          is_a_template: false,
+          is_control_domain: false
+        };
+        key = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, key);
+        return requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve();
+          });
+        });
+      });
+      afterEach(function() {});
+      it("should call VM.get_power_state on the API", function(done) {
+        return vm.refreshPowerState().then(function() {
+          expect(requestStub).to.have.been.calledWith("VM.get_power_state");
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should pass the OpaqueRef of the VM to the API", function(done) {
+        return vm.refreshPowerState().then(function() {
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should reject if the API call fails", function(done) {
+        var promise;
+        requestStub.restore();
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return reject();
+          });
+        });
+        promise = vm.refreshPowerState();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should resolve if the API call is successfull", function(done) {
+        var promise;
+        promise = vm.refreshPowerState();
+        return expect(promise).to.eventually.be.fulfilled.and.notify(done);
+      });
+      it("should resolve with the latest power state of the VM", function(done) {
+        requestStub.restore();
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Suspended");
+          });
+        });
+        return vm.refreshPowerState().then(function(powerState) {
+          expect(powerState).to.equal("Suspended");
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      return it("should update the VM to the latest power state", function(done) {
+        requestStub.restore();
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Suspended");
+          });
+        });
+        return vm.refreshPowerState().then(function() {
+          expect(vm.powerState).to.equal("Suspended");
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+    });
+    describe("pause()", function() {
+      var key, refreshPowerStateStub, requestStub, vm;
+      key = void 0;
+      vm = void 0;
+      requestStub = void 0;
+      refreshPowerStateStub = void 0;
+      beforeEach(function() {
+        var validVM;
+        validVM = {
+          uuid: 'abcd',
+          is_a_template: false,
+          is_control_domain: false
+        };
+        key = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, key);
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve();
+          });
+        });
+        return refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Running");
+          });
+        });
+      });
+      afterEach(function() {
+        requestStub.restore();
+        return refreshPowerStateStub.restore();
+      });
+      it("should initially refresh the powerState of the VM", function(done) {
+        return vm.pause().then(function() {
+          expect(refreshPowerStateStub).to.have.been.called;
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should reject if the powerState of the VM is `Paused`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Paused");
+          });
+        });
+        promise = vm.pause();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Suspended`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Suspended");
+          });
+        });
+        promise = vm.pause();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Halted`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Halted");
+          });
+        });
+        promise = vm.pause();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should resolve if the powerState of the VM is `Running`", function(done) {
+        var promise;
+        promise = vm.pause();
+        return expect(promise).to.eventually.be.fulfilled.and.notify(done);
+      });
+      it("should call `VM.pause` on the API", function(done) {
+        return vm.pause().then(function() {
+          expect(requestStub).to.have.been.calledWith("VM.pause");
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      return it("should pass OpaqueRef for the VM to the API", function(done) {
+        return vm.pause().then(function() {
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+    });
+    describe("unpause()", function() {
+      var key, refreshPowerStateStub, requestStub, vm;
+      key = void 0;
+      vm = void 0;
+      requestStub = void 0;
+      refreshPowerStateStub = void 0;
+      beforeEach(function() {
+        var validVM;
+        validVM = {
+          uuid: 'abcd',
+          is_a_template: false,
+          is_control_domain: false
+        };
+        key = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, key);
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve();
+          });
+        });
+        return refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Paused");
+          });
+        });
+      });
+      afterEach(function() {
+        requestStub.restore();
+        return refreshPowerStateStub.restore();
+      });
+      it("should initially refresh the powerState of the VM", function(done) {
+        return vm.unpause().then(function() {
+          expect(refreshPowerStateStub).to.have.been.called;
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should reject if the powerState of the VM is `Running`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Running");
+          });
+        });
+        promise = vm.unpause();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Suspended`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Suspended");
+          });
+        });
+        promise = vm.unpause();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Halted`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Halted");
+          });
+        });
+        promise = vm.unpause();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should resolve if the powerState of the VM is `Paused`", function(done) {
+        var promise;
+        promise = vm.unpause();
+        return expect(promise).to.eventually.be.fulfilled.and.notify(done);
+      });
+      it("should call `VM.unpause` on the API", function(done) {
+        return vm.unpause().then(function() {
+          expect(requestStub).to.have.been.calledWith("VM.unpause");
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      return it("should pass OpaqueRef for the VM to the API", function(done) {
+        return vm.unpause().then(function() {
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+    });
+    describe("suspend()", function() {
+      var key, refreshPowerStateStub, requestStub, vm;
+      key = void 0;
+      vm = void 0;
+      requestStub = void 0;
+      refreshPowerStateStub = void 0;
+      beforeEach(function() {
+        var validVM;
+        validVM = {
+          uuid: 'abcd',
+          is_a_template: false,
+          is_control_domain: false
+        };
+        key = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, key);
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve();
+          });
+        });
+        return refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Running");
+          });
+        });
+      });
+      afterEach(function() {
+        requestStub.restore();
+        return refreshPowerStateStub.restore();
+      });
+      it("should initially refresh the powerState of the VM", function(done) {
+        return vm.suspend().then(function() {
+          expect(refreshPowerStateStub).to.have.been.called;
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should reject if the powerState of the VM is `Paused`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Paused");
+          });
+        });
+        promise = vm.suspend();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Suspended`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Suspended");
+          });
+        });
+        promise = vm.suspend();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Halted`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Halted");
+          });
+        });
+        promise = vm.suspend();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should resolve if the powerState of the VM is `Running`", function(done) {
+        var promise;
+        promise = vm.suspend();
+        return expect(promise).to.eventually.be.fulfilled.and.notify(done);
+      });
+      it("should call `VM.suspend` on the API", function(done) {
+        return vm.suspend().then(function() {
+          expect(requestStub).to.have.been.calledWith("VM.suspend");
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      return it("should pass OpaqueRef for the VM to the API", function(done) {
+        return vm.suspend().then(function() {
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+    });
+    return describe("resume()", function() {
+      var key, refreshPowerStateStub, requestStub, vm;
+      key = void 0;
+      vm = void 0;
+      requestStub = void 0;
+      refreshPowerStateStub = void 0;
+      beforeEach(function() {
+        var validVM;
+        validVM = {
+          uuid: 'abcd',
+          is_a_template: false,
+          is_control_domain: false
+        };
+        key = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, key);
+        requestStub = sinon.stub(session, "request", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve();
+          });
+        });
+        return refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Suspended");
+          });
+        });
+      });
+      afterEach(function() {
+        requestStub.restore();
+        return refreshPowerStateStub.restore();
+      });
+      it("should initially refresh the powerState of the VM", function(done) {
+        return vm.resume().then(function() {
+          expect(refreshPowerStateStub).to.have.been.called;
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should reject if the powerState of the VM is `Paused`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Paused");
+          });
+        });
+        promise = vm.resume();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Running`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Running");
+          });
+        });
+        promise = vm.resume();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should reject if the powerState of the VM is `Halted`", function(done) {
+        var promise;
+        refreshPowerStateStub.restore();
+        refreshPowerStateStub = sinon.stub(vm, "refreshPowerState", function() {
+          return new Promise(function(resolve, reject) {
+            return resolve("Halted");
+          });
+        });
+        promise = vm.resume();
+        return expect(promise).to.eventually.be.rejected.and.notify(done);
+      });
+      it("should resolve if the powerState of the VM is `Suspended`", function(done) {
+        var promise;
+        promise = vm.resume();
+        return expect(promise).to.eventually.be.fulfilled.and.notify(done);
+      });
+      it("should call `VM.resume` on the API", function(done) {
+        return vm.resume().then(function() {
+          expect(requestStub).to.have.been.calledWith("VM.resume");
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should pass OpaqueRef for the VM to the API", function(done) {
+        return vm.resume().then(function() {
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key, sinon.match.any, sinon.match.any]);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      it("should pass `false` as the default value for `start_paused` to the API", function(done) {
+        return vm.resume().then(function() {
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [sinon.match.any, false, sinon.match.any]);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
+      });
+      return it("should pass `false` as the default value for `force` to the API", function(done) {
+        return vm.resume().then(function() {
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [sinon.match.any, sinon.match.any, false]);
+          return done();
+        })["catch"](function(e) {
+          return done(e);
+        });
       });
     });
   });
