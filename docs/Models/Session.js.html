@@ -80,11 +80,133 @@
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#Session"><i class="alert alert-info"></i><span>Session</span></a>
+              </li>
+              <li><a href="#login"><i class="alert alert-info"></i><span>login</span></a>
+              </li>
+              <li><a href="#logout"><i class="alert alert-info"></i><span>logout</span></a>
+              </li>
+              <li><a href="#request"><i class="alert alert-info"></i><span>request</span></a>
+              </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <div class="description"> </div>
+          <section id="Session">
+            <h1>Session</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>Session()</span>
+            </p>
+          </section>
+          <div class="description"><p>Construct Session</p> </div>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>apiClient</td>
+                <td>Object</td>
+                <td><ul>
+<li>An instance of APIClient</li>
+</ul>
+</td>
+              </tr>
+            </tbody>
+          </table>
+          <section id="login">
+            <h1>login</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Session.prototype.login()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Login to the API</p> </div>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>username</td>
+                <td>String</td>
+                <td><ul>
+<li>The Username to log in with</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <td>password</td>
+                <td>String</td>
+                <td><ul>
+<li>The Password to log in with</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Promise</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <section id="logout">
+            <h1>logout</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Session.prototype.logout()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Logout from the API</p> </div>
+          <section id="request">
+            <h1>request</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>Session.prototype.request()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Make a request via the API</p> </div>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>method</td>
+                <td>String</td>
+                <td><ul>
+<li>The method to call on the API</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <td>args</td>
+                <td>Array</td>
+                <td><ul>
+<li>Array of arguments pass to the API</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <td>return</td>
+                <td>Promise</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

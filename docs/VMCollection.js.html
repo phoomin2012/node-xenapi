@@ -80,11 +80,57 @@
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#VMCollection"><i class="alert alert-info"></i><span>VMCollection</span></a>
+              </li>
+              <li><a href="#list"><i class="alert alert-info"></i><span>list</span></a>
+              </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <div class="description"> </div>
+          <section id="VMCollection">
+            <h1>VMCollection</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>VMCollection()</span>
+            </p>
+          </section>
+          <div class="description"><p>Construct VMCollection</p> </div>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>session</td>
+                <td>Object</td>
+                <td><ul>
+<li>An instance of Session</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <td>VM</td>
+                <td>Object</td>
+                <td><ul>
+<li>Dependency injection of the VM class.</li>
+</ul>
+</td>
+              </tr>
+            </tbody>
+          </table>
+          <section id="list">
+            <h1>list</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>VMCollection.prototype.list()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>List all VMs</p> </div>
         </div>
       </div>
     </div>

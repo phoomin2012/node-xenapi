@@ -80,11 +80,105 @@
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#VM"><i class="alert alert-info"></i><span>VM</span></a>
+              </li>
+              <li><a href="#refreshPowerState"><i class="alert alert-info"></i><span>refreshPowerState</span></a>
+              </li>
+              <li><a href="#pause"><i class="alert alert-info"></i><span>pause</span></a>
+              </li>
+              <li><a href="#unpause"><i class="alert alert-info"></i><span>unpause</span></a>
+              </li>
+              <li><a href="#suspend"><i class="alert alert-info"></i><span>suspend</span></a>
+              </li>
+              <li><a href="#resume"><i class="alert alert-info"></i><span>resume</span></a>
+              </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <div class="description"> </div>
+          <section id="VM">
+            <h1>VM</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>VM()</span>
+            </p>
+          </section>
+          <div class="description"><p>Construct VM</p> </div>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>session</td>
+                <td>Object</td>
+                <td><ul>
+<li>An instance of Session</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <td>vm</td>
+                <td>Object</td>
+                <td><ul>
+<li>A JSON object representing this VM</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <td>key</td>
+                <td>String</td>
+                <td><ul>
+<li>The OpaqueRef handle to this VM</li>
+</ul>
+</td>
+              </tr>
+            </tbody>
+          </table>
+          <section id="refreshPowerState">
+            <h1>refreshPowerState</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>VM.prototype.refreshPowerState()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Refresh the power state of this VM</p> </div>
+          <section id="pause">
+            <h1>pause</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>VM.prototype.pause()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Pause this VM. Can only be applied to VMs in the Running state.</p> </div>
+          <section id="unpause">
+            <h1>unpause</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>VM.prototype.unpause()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Unpause this VM. Can only be applied to VMs in the Paused state.</p> </div>
+          <section id="suspend">
+            <h1>suspend</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>VM.prototype.suspend()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Suspend this VM. Can only be applied to VMs in the Running state.</p> </div>
+          <section id="resume">
+            <h1>resume</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>VM.prototype.resume()</span> -><span>Promise</span>
+            </p>
+          </section>
+          <div class="description"><p>Resume this VM. Can only be applied to VMs in the Suspended state.</p> </div>
         </div>
       </div>
     </div>
