@@ -2,10 +2,16 @@ debug = require('debug') 'XenAPI:VMCollection'
 Promise = require 'bluebird'
 _ = require 'lodash'
 
-class module.exports
+class VMCollection
 	session = undefined
 	VM = undefined
 
+	###*
+	* Construct VMCollection
+	* @class
+	* @param      {Object}   session - An instance of Session
+	* @param      {Object}   VM - Dependency injection of the VM class.
+	###
 	constructor: (_session, _VM) ->
 		debug "constructor()"
 		unless _session
@@ -18,6 +24,10 @@ class module.exports
 		else
 			VM = _VM
 
+	###*
+	 * List all VMs
+	 * @return     {Promise}
+	###
 	list: =>
 		debug "list()"
 		new Promise (resolve, reject) =>
@@ -34,3 +44,5 @@ class module.exports
 			.catch (e) ->
 				debug e
 				reject e
+
+module.exports = VMCollection

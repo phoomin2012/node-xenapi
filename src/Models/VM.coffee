@@ -1,11 +1,18 @@
 debug = require('debug') 'XenAPI:VM'
 Promise = require 'bluebird'
 
-class module.exports
+class VM
 	key = undefined
 	session = undefined
 	vm = undefined
 
+	###*
+	* Construct VM
+	* @class
+	* @param      {Object}   session - An instance of Session
+	* @param      {Object}   vm - A JSON object representing this VM
+	* @param      {String}   key - The OpaqueRef handle to this VM
+	###
 	constructor: (_session, _vm, _key) ->
 		debug "constructor()"
 		unless _session
@@ -38,6 +45,10 @@ class module.exports
 			RUNNING: 'Running',
 			SUSPENDED: 'Suspended'
 
+	###*
+	 * Refresh the power state of this VM
+	 * @return     {Promise}
+	###
 	refreshPowerState: =>
 		debug "refreshPowerState()"
 
@@ -50,6 +61,10 @@ class module.exports
 				debug e
 				reject e
 
+	###*
+	 * Pause this VM. Can only be applied to VMs in the Running state.
+	 * @return     {Promise}
+	###
 	pause: =>
 		debug "pause()"
 		new Promise (resolve, reject) =>
@@ -66,6 +81,10 @@ class module.exports
 				debug e
 				reject e
 
+	###*
+	 * Unpause this VM. Can only be applied to VMs in the Paused state.
+	 * @return     {Promise}
+	###
 	unpause: =>
 		debug "unpause()"
 		new Promise (resolve, reject) =>
@@ -82,6 +101,10 @@ class module.exports
 				debug e
 				reject e
 
+	###*
+	 * Suspend this VM. Can only be applied to VMs in the Running state.
+	 * @return     {Promise}
+	###
 	suspend: =>
 		debug "suspend()"
 		new Promise (resolve, reject) =>
@@ -98,6 +121,10 @@ class module.exports
 				debug e
 				reject e
 
+	###*
+	 * Resume this VM. Can only be applied to VMs in the Suspended state.
+	 * @return     {Promise}
+	###
 	resume: =>
 		debug "resume()"
 		new Promise (resolve, reject) =>
@@ -116,3 +143,5 @@ class module.exports
 			.catch (e) ->
 				debug e
 				reject e
+
+module.exports = VM

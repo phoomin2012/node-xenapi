@@ -1,7 +1,15 @@
 debug = require('debug') 'APIClient'
 Promise = require 'bluebird'
 
-class module.exports
+class APIClient
+	###*
+	* Construct APIClient
+	* @class
+	* @param      {Object}   xmlrpc
+	* @param      {Object}   options - for connecting to the API
+	* @param      {String}   options.host - The host the API is being served on
+	* @param      {String}   options.port - The port the API is being served on
+	###
 	constructor: (xmlrpc, @options) ->
 		debug "constructor()"
 
@@ -19,6 +27,13 @@ class module.exports
 
 		@client = xmlrpc.createClient @options
 
+	###*
+	 * Make a request via the API
+	 * @protected
+	 * @param      {String}   method - The method to call on the API
+	 * @param      {Array}   args - Array of arguments pass to the API
+	 * @return     {Promise}
+	###
 	request: (method, args) =>
 		debug "request(#{method}, #{args})"
 		new Promise (resolve, reject) =>
@@ -28,3 +43,5 @@ class module.exports
 				else
 					debug value
 					resolve value.Value
+
+module.exports = APIClient

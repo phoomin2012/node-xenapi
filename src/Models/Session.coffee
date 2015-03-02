@@ -1,7 +1,12 @@
 debug = require('debug') 'XenAPI:Session'
 Promise = require 'bluebird'
 
-class module.exports
+class Session
+	###*
+	* Construct Session
+	* @class
+	* @param      {Object}   apiClient - An instance of APIClient
+	###
 	constructor: (@apiClient) ->
 		debug "constructor()"
 		unless @apiClient
@@ -9,6 +14,12 @@ class module.exports
 
 		@loggedIn = false
 
+	###*
+	 * Login to the API
+	 * @param      {String}   username - The Username to log in with
+	 * @param      {String}   password - The Password to log in with
+	 * @return     {Promise}
+	###
 	login: (username, password) =>
 		debug "login()"
 		new Promise (resolve, reject) =>
@@ -25,6 +36,10 @@ class module.exports
 				debug "already logged in"
 				reject()
 
+	###*
+	 * Logout from the API
+	 * @return     {Promise}
+	###
 	logout: =>
 		debug "logout()"
 		new Promise (resolve, reject) =>
@@ -40,6 +55,13 @@ class module.exports
 					debug "logout Failed"
 					reject()
 
+	###*
+	 * Make a request via the API
+	 * @protected
+	 * @param      {String}   method - The method to call on the API
+	 * @param      {Array}   args - Array of arguments pass to the API
+	 * @return     {Promise}
+	###
 	request: (method, args) =>
 		debug "request(#{method}, #{args})"
 
@@ -56,3 +78,5 @@ class module.exports
 				resolve value
 			.catch (e) =>
 				reject e
+
+module.exports = Session
