@@ -47,27 +47,25 @@ class Task
 		@uuid = task.uuid
 		@name = task.name_label
 		@description = task.name_description
-		@allowed_operations = []
-
-		_.each task.allowed_operations, (operation) =>
-			_.each @ALLOWED_OPERATIONS, (allowed_operation) =>
-				if operation == allowed_operation
-					@allowed_operations.push allowed_operation
-
-		if task.allowed_operations.length != @allowed_operations.length
-			throw Error "Could not map all Allowed Operations."
-
-		@status = ""
-
-		_.each @STATUS, (status) =>
-			if task.status == status
-				@status = status
-
-		if @status == ""
-			throw Error "Could not map task Status"
-
+		@allowed_operations = task.allowed_operations
+		@status = task.status
 		@created = task.created
 		@finished = task.finished
 		@progress = task.progress
+
+	cancel: =>
+		debug "cancel()"
+
+		new Promise (resolve, reject) =>
+			unless _.contains @allowed_operations, @ALLOWED_OPERATIONS.CANCEL
+				reject new Error "Operation is not allowed"
+				return
+
+			session.request("task.cancel", key).then (value) =>
+				debug value
+				resolve()
+			.catch (e) ->
+				debug e
+				reject e
 
 module.exports = Task

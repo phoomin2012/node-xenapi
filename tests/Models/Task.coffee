@@ -122,3 +122,53 @@ describe "Task", ->
 			task = new Task session, validTask, "OpaqueRef"
 
 			expect(task.progress).to.equal validTask.progress
+
+	describe "cancel()", ->
+		task = undefined
+		validTask = undefined
+
+		beforeEach ->
+			validTask =
+				allowed_operations: ["cancel"]
+				status: "success"
+
+			task = new Task session, validTask, "OpaqueRef"
+
+		afterEach ->
+
+		it "should return a Promise", ->
+			expect(task.cancel()).to.be.an.instanceof Promise
+
+		it "should reject its promise if `cancel` is not an allowed operation", (done) ->
+			validTask =
+				allowed_operations: []
+				status: "success"
+
+			task = new Task session, validTask, "OpaqueRef"
+
+			expect(task.cancel()).to.eventually.be.rejectedWith(/Operation is not allowed/).and.notify done
+
+		it "should call `task.cancel` on the API", (done) ->
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+
+			task.cancel().then ->
+				expect(requestStub).to.have.been.calledWith "task.cancel"
+				done()
+			.catch (e) ->
+				done e
+
+		it "should call `task.cancel` with the OpaqueRef of the Task", (done) ->
+			requestStub = sinon.stub session, "request", ->
+				new Promise (resolve, reject) ->
+					resolve()
+
+			opaqueRef = "abcd1234"
+			task = new Task session, validTask, opaqueRef
+
+			task.cancel().then ->
+				expect(requestStub).to.have.been.calledWith "task.cancel", opaqueRef
+				done()
+			.catch (e) ->
+				done e
