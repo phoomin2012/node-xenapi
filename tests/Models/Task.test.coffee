@@ -11,10 +11,15 @@ chai.use chaiAsPromised
 describe "Task", ->
 	session = undefined
 	Task = undefined
+	requestStub = undefined
 
 	beforeEach ->
 		session =
 			request: ->
+
+		requestStub = sinon.stub session, "request", ->
+			new Promise (resolve, reject) ->
+				resolve()
 
 		Task = require '../../lib/Models/Task'
 
@@ -149,10 +154,6 @@ describe "Task", ->
 			expect(task.cancel()).to.eventually.be.rejectedWith(/Operation is not allowed/).and.notify done
 
 		it "should call `task.cancel` on the API", (done) ->
-			requestStub = sinon.stub session, "request", ->
-				new Promise (resolve, reject) ->
-					resolve()
-
 			task.cancel().then ->
 				expect(requestStub).to.have.been.calledWith "task.cancel"
 				done()
@@ -160,10 +161,6 @@ describe "Task", ->
 				done e
 
 		it "should call `task.cancel` with the OpaqueRef of the Task", (done) ->
-			requestStub = sinon.stub session, "request", ->
-				new Promise (resolve, reject) ->
-					resolve()
-
 			opaqueRef = "abcd1234"
 			task = new Task session, validTask, opaqueRef
 
