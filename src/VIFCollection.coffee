@@ -45,4 +45,17 @@ class VIFCollection
 				debug e
 				reject e
 
+	create: =>
+		debug "create()"
+		vif =
+			uuid: undefined,
+			MAC: "",
+			device: "0",
+			MTU: "1500",
+			currently_attached: false,
+			network: "OpaqueRef: undefined",
+			VM: "OpaqueRef: undefined"
+
+		new VIF session, vif, "OpaqueRef: undefined"
+
 module.exports = VIFCollection
