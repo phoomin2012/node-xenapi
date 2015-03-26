@@ -21,7 +21,7 @@
     "sinon-chai": "^2.6.0"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha tests/*.js tests/*/*.js"
+    "test": "node ./node_modules/mocha/bin/mocha tests/*.js tests/*/*.js"
   },
   "keywords": [
     "xen",
