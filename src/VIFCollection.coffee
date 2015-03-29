@@ -53,9 +53,9 @@ class VIFCollection
 			device: "0",
 			MTU: "1500",
 			currently_attached: false,
-			network: "OpaqueRef: undefined",
-			VM: "OpaqueRef: undefined"
+			network: "OpaqueRef:NULL",
+			VM: "OpaqueRef:NULL"
 
-		new VIF session, vif, "OpaqueRef: undefined"
+		new VIF session, vif, "OpaqueRef:NULL"
 
 module.exports = VIFCollection
