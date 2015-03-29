@@ -45,16 +45,17 @@ class VIFCollection
 				debug e
 				reject e
 
-	create: =>
+	create: (network, vm) =>
 		debug "create()"
+
 		vif =
-			uuid: undefined,
+			uuid: null,
+			device: vm.VIFs.length.toString(),
 			MAC: "",
-			device: "0",
 			MTU: "1500",
 			currently_attached: false,
-			network: "OpaqueRef:NULL",
-			VM: "OpaqueRef:NULL"
+			network: network.getOpaqueRef(),
+			VM: vm.getOpaqueRef()
 
 		new VIF session, vif, "OpaqueRef:NULL"
 

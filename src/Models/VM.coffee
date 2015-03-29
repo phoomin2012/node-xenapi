@@ -38,12 +38,20 @@ class VM
 		@description = vm.name_description
 		@xenToolsInstalled = !(vm.guest_metrics == 'OpaqueRef:NULL')
 		@powerState = vm.power_state
+		@VIFs = vm.VIFs
 
 		@POWER_STATES =
 			HALTED: 'Halted',
 			PAUSED: 'Paused',
 			RUNNING: 'Running',
 			SUSPENDED: 'Suspended'
+
+	###*
+	 * Return the OpaqueRef that represents this VM
+	 * @return     {String}
+	###
+	getOpaqueRef: =>
+		return key
 
 	###*
 	 * Refresh the power state of this VM

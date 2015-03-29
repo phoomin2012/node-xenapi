@@ -34,19 +34,17 @@ class VIF
 			ATTACH: "attach",
 			UNPLUG: "unplug"
 
-		@uuid = vif.uuid
-		@device = vif.device
 		@MAC = vif.MAC
 		@MTU = vif.MTU
-		@attached = vif.currently_attached
-		@allowed_operations = vif.allowed_operations
+		@device = vif.device
 		@network = vif.network
 		@vm = vif.VM
 
+		@uuid = vif.uuid
+		@attached = vif.currently_attached
+
 	toJSON: =>
 		{
-			allowed_operations: @allowed_operations,
-			current_operations: @current_operations,
 			MAC: @MAC,
 			MTU: @MTU,
 			device: @device,
@@ -57,9 +55,8 @@ class VIF
 			qos_algorithm_params: {}
 		}
 
-	make: =>
+	push: =>
 		new Promise (resolve, reject) =>
-			debug @.toJSON()
 			session.request("VIF.create", [@.toJSON()]).then (value) =>
 				debug value
 			.catch (e) ->
