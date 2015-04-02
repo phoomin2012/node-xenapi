@@ -2,6 +2,8 @@ APIClient = require './APIClient'
 NetworkCollection = require './NetworkCollection'
 Network = require './Models/Network'
 Session = require './Models/Session'
+SRCollection = require './SRCollection'
+SR = require './Models/SR'
 TaskCollection = require './TaskCollection'
 Task = require './Models/Task'
 VIFCollection = require './VIFCollection'
@@ -14,14 +16,16 @@ module.exports = (options) ->
 	apiClient = new APIClient xmlrpc, options
 	session = new Session apiClient
 	networkCollection = new NetworkCollection session, Network
+	srCollection = new SRCollection session, SR
 	taskCollection = new TaskCollection session, Task
 	vifCollection = new VIFCollection session, VIF
 	vmCollection = new VMCollection session, VM
 
 	return {
 		session: session,
-		networkCollection: networkCollection
+		networkCollection: networkCollection,
+		srCollection: srCollection,
 		taskCollection: taskCollection,
-		vifCollection, vifCollection,
+		vifCollection: vifCollection,
 		vmCollection: vmCollection
 	}
