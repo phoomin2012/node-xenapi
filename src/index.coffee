@@ -1,6 +1,8 @@
 APIClient = require './APIClient'
 NetworkCollection = require './NetworkCollection'
 Network = require './Models/Network'
+PoolCollection = require './PoolCollection'
+Pool = require './Models/Pool'
 Session = require './Models/Session'
 SRCollection = require './SRCollection'
 SR = require './Models/SR'
@@ -16,6 +18,7 @@ module.exports = (options) ->
 	apiClient = new APIClient xmlrpc, options
 	session = new Session apiClient
 	networkCollection = new NetworkCollection session, Network
+	poolCollection = new PoolCollection session, Pool
 	srCollection = new SRCollection session, SR
 	taskCollection = new TaskCollection session, Task
 	vifCollection = new VIFCollection session, VIF
@@ -24,6 +27,7 @@ module.exports = (options) ->
 	return {
 		session: session,
 		networkCollection: networkCollection,
+		poolCollection: poolCollection,
 		srCollection: srCollection,
 		taskCollection: taskCollection,
 		vifCollection: vifCollection,
