@@ -6,6 +6,10 @@ class VMCollection
 	session = undefined
 	VM = undefined
 
+	createVMInstance = (vm, key) =>
+		if !vm.is_a_template && !vm.is_control_domain
+			return new VM session, vm, key
+
 	###*
 	* Construct VMCollection
 	* @class
@@ -35,12 +39,23 @@ class VMCollection
 				unless value
 					reject()
 				debug "Received #{Object.keys(value).length} records"
-				createVMInstance = (vm, key) =>
-					if !vm.is_a_template && !vm.is_control_domain
-						return new VM session, vm, key
 
 				VMs = _.map value, createVMInstance
 				resolve _.filter VMs, (vm) -> vm
+			.catch (e) ->
+				debug e
+				reject e
+
+
+	findOpaqueRef: (opaqueRef) =>
+		debug "findOpaqueRef(#{opaqueRef})"
+		new Promise (resolve, reject) =>
+			session.request("VM.get_record", [opaqueRef]).then (value) =>
+				unless value
+					reject()
+
+				vm = createVMInstance value, opaqueRef
+				resolve vm
 			.catch (e) ->
 				debug e
 				reject e
