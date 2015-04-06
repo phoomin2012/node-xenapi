@@ -5,6 +5,7 @@ _ = require 'lodash'
 class PoolCollection
   session = undefined
   Pool = undefined
+  xenAPI = undefined
 
   ###*
   * Construct PoolCollection
@@ -12,17 +13,18 @@ class PoolCollection
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   Pool - Dependency injection of the Pool class.
   ###
-  constructor: (_session, _Pool) ->
+  constructor: (_session, _Pool, _xenAPI) ->
     debug "constructor()"
     unless _session
       throw Error "Must provide session"
-    else
-      session = _session
-
     unless _Pool
       throw Error "Must provide Pool"
-    else
-      Pool = _Pool
+    unless _xenAPI
+      throw Error "Must provide xenAPI"
+
+    session = _session
+    Pool = _Pool
+    xenAPI = _xenAPI
 
   ###*
   * List all Pools
@@ -37,7 +39,7 @@ class PoolCollection
 
         debug "Received #{Object.keys(value).length} records"
         createPoolInstance = (pool, key) =>
-          return new Pool session, pool, key
+          return new Pool session, pool, key, xenAPI
 
         Pools = _.map value, createPoolInstance
         resolve _.filter Pools, (pool) -> pool
