@@ -48,15 +48,18 @@ class VIFCollection
 	create: (network, vm) =>
 		debug "create()"
 
-		vif =
-			uuid: null,
-			device: vm.VIFs.length.toString(),
-			MAC: "",
-			MTU: "1500",
-			currently_attached: false,
-			network: network.getOpaqueRef(),
-			VM: vm.getOpaqueRef()
+		new Promise (resolve, reject) =>
+			vif =
+				uuid: null,
+				device: vm.VIFs.length.toString(),
+				MAC: "",
+				MTU: "1500",
+				currently_attached: false,
+				network: network.getOpaqueRef(),
+				VM: vm.getOpaqueRef()
 
-		new VIF session, vif, "OpaqueRef:NULL"
+			newVIF = new VIF session, vif, "OpaqueRef:NULL"
+
+			resolve newVIF
 
 module.exports = VIFCollection
