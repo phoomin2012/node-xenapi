@@ -10,6 +10,8 @@ TaskCollection = require './TaskCollection'
 Task = require './Models/Task'
 TemplateCollection = require './TemplateCollection'
 Template = require './Models/Template'
+VBDCollection = require './VBDCollection'
+VBD = require './Models/VBD'
 VIFCollection = require './VIFCollection'
 VIF = require './Models/VIF'
 VMCollection = require './VMCollection'
@@ -29,6 +31,7 @@ module.exports = (options) ->
   srCollection = new SRCollection session, SR, xenAPI
   taskCollection = new TaskCollection session, Task, xenAPI
   templateCollection = new TemplateCollection session, Template, xenAPI
+  vbdCollection = new VBDCollection session, VBD, xenAPI
   vifCollection = new VIFCollection session, VIF, xenAPI
   vmCollection = new VMCollection session, VM, xenAPI
 
@@ -37,6 +40,7 @@ module.exports = (options) ->
   xenAPI.srCollection = srCollection
   xenAPI.taskCollection = taskCollection
   xenAPI.templateCollection = templateCollection
+  xenAPI.vbdCollection = vbdCollection
   xenAPI.vifCollection = vifCollection
   xenAPI.vmCollection = vmCollection
 
