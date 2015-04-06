@@ -36,6 +36,7 @@ class VM
 		@uuid = vm.uuid
 		@name = vm.name_label
 		@description = vm.name_description
+		@other_config = vm.other_config
 		@xenToolsInstalled = !(vm.guest_metrics == 'OpaqueRef:NULL')
 		@powerState = vm.power_state
 		@VIFs = vm.VIFs
