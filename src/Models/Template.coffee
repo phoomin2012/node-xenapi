@@ -84,7 +84,8 @@ class Template
     new Promise (resolve, reject) =>
       session.request("VM.provision", [key]).then (value) =>
         debug value
-        resolve()
+        xenAPI.vmCollection.findOpaqueRef(key).then (vm) ->
+          resolve vm
       .catch (e) ->
         debug e
         reject e
