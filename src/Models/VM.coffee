@@ -154,4 +154,13 @@ class VM
         debug e
         reject e
 
+  start: =>
+    debug "start()"
+    new Promise (resolve, reject) =>
+      session.request("VM.start", [key, false, false]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VM
