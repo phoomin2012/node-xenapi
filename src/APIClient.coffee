@@ -42,6 +42,9 @@ class APIClient
 					reject error
 				else
 					debug value
-					resolve value.Value
+					if value.Status == "Failure"
+						reject value.ErrorDescription
+					else
+						resolve value.Value
 
 module.exports = APIClient
