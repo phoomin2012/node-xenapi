@@ -59,6 +59,7 @@ class VIF
 		new Promise (resolve, reject) =>
 			session.request("VIF.create", [@.toJSON()]).then (value) =>
 				debug value
+				resolve()
 			.catch (e) ->
 				debug e
 				reject e
