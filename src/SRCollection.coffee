@@ -6,6 +6,9 @@ class SRCollection
   session = undefined
   SR = undefined
 
+  createSRInstance = (sr, key) =>
+    return new SR session, sr, key
+
   ###*
   * Construct SRCollection
   * @class
@@ -36,11 +39,22 @@ class SRCollection
           reject()
 
         debug "Received #{Object.keys(value).length} records"
-        createSRInstance = (sr, key) =>
-          return new SR session, sr, key
 
         SRs = _.map value, createSRInstance
         resolve _.filter SRs, (sr) -> sr
+      .catch (e) ->
+        debug e
+        reject e
+
+  findOpaqueRef: (opaqueRef) =>
+    debug "findOpaqueRef(#{opaqueRef})"
+    new Promise (resolve, reject) =>
+      session.request("SR.get_record", [opaqueRef]).then (value) =>
+        unless value
+          reject()
+
+        template = createSRInstance value, opaqueRef
+        resolve template
       .catch (e) ->
         debug e
         reject e
