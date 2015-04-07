@@ -64,4 +64,17 @@ class VBDCollection
 
       resolve newVBD
 
+  findOpaqueRef: (opaqueRef) =>
+    debug "findOpaqueRef(#{opaqueRef})"
+    new Promise (resolve, reject) =>
+      session.request("VBD.get_record", [opaqueRef]).then (value) =>
+        unless value
+          reject()
+
+        template = createVBDInstance value, opaqueRef
+        resolve template
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VBDCollection
