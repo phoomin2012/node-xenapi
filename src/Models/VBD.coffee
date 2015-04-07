@@ -64,7 +64,8 @@ class VBD
     new Promise (resolve, reject) =>
       session.request("VBD.create", [@.toJSON()]).then (value) =>
         debug value
-        resolve()
+        xenAPI.vbdCollection.findOpaqueRef(value).then (vbd) ->
+          resolve vbd
       .catch (e) ->
         debug e
         reject e
