@@ -1,28 +1,39 @@
 debug = require('debug') 'XenAPI:NetworkCollection'
 Promise = require 'bluebird'
+minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class NetworkCollection
-  session = undefined
   Network = undefined
+  session = undefined
+  xenAPI = undefined
+
+  createNetworkInstance = (network, opaqueRef) =>
+    unless network.other_config &&
+      (network.other_config.is_guest_installer_network ||
+        network.other_config.is_host_internal_management_network)
+      return new Network session, network, opaqueRef, xenAPI
 
   ###*
   * Construct NetworkCollection
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   Network - Dependency injection of the Network class.
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
-  constructor: (_session, _Network) ->
+  constructor: (_session, _Network, _xenAPI) ->
     debug "constructor()"
     unless _session
       throw Error "Must provide session"
-    else
-      session = _session
-
     unless _Network
       throw Error "Must provide Network"
-    else
-      Network = _Network
+    unless _xenAPI
+      throw Error "Must provide xenAPI"
+
+    #These can safely go into shared class scope because this constructor is only called once.
+    session = _session
+    xenAPI = _xenAPI
+    Network = _Network
 
   ###*
    * List all Networks
@@ -35,11 +46,6 @@ class NetworkCollection
         unless value
           reject()
         debug "Received #{Object.keys(value).length} records"
-        createNetworkInstance = (network, key) =>
-          unless network.other_config &&
-            (network.other_config.is_guest_installer_network ||
-             network.other_config.is_host_internal_management_network)
-            return new Network session, network, key
 
         Networks = _.map value, createNetworkInstance
         resolve _.filter Networks, (network) -> network

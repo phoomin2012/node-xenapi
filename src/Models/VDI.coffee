@@ -2,44 +2,37 @@ debug = require('debug') 'XenAPI:VDI'
 Promise = require 'bluebird'
 
 class VDI
-  key = undefined
   session = undefined
-  vdi = undefined
   xenAPI = undefined
 
   ###*
-  * Construct VBD.
+  * Construct VDI.
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   vdi - A JSON object representing this VDI
-  * @param      {String}   key - The OpaqueRef handle to this VDI
+  * @param      {String}   opaqueRef - The OpaqueRef handle to this VDI
+  * @param      {Object}   xenAPI - An instance of XenAPI.
   ###
-  constructor: (_session, _vdi, _key, _xenAPI) ->
+  constructor: (_session, _vdi, _opaqueRef, _xenAPI) ->
     debug "constructor()"
-    debug _vdi
+    debug _vdi, _opaqueRef
+
     unless _session
       throw Error "Must provide `session`"
     unless _vdi
       throw Error "Must provide `vdi`"
-    unless _key
-      throw Error "Must provide `key`"
+    unless _opaqueRef
+      throw Error "Must provide `opaqueRef`"
 
+    #These can safely go into class scope because there is only one instance of each.
     session = _session
-    vdi = _vdi
-    key = _key
     xenAPI = _xenAPI
 
-    @uuid = vdi.uuid
-    @name = vdi.name_label
-    @description = vdi.name_description
-    @allowed_operations = vdi.allowed_operations
-    @SR = vdi.SR
-
-  ###*
-   * Return the OpaqueRef that represents this VDI
-   * @return     {String}
-  ###
-  getOpaqueRef: =>
-    return key
+    @opaqueRef = _opaqueRef
+    @uuid = _vdi.uuid
+    @name = _vdi.name_label
+    @description = _vdi.name_description
+    @allowed_operations = _vdi.allowed_operations
+    @SR = _vdi.SR
 
 module.exports = VDI

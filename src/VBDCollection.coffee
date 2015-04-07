@@ -1,20 +1,22 @@
 debug = require('debug') 'XenAPI:VBDCollection'
 Promise = require 'bluebird'
+minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class VBDCollection
-  session = undefined
   VBD = undefined
+  session = undefined
   xenAPI = undefined
 
-  createVBDInstance = (vbd, key) =>
-    return new VBD session, vbd, key, xenAPI
+  createVBDInstance = (vbd, opaqueRef) =>
+    return new VBD session, vbd, opaqueRef, xenAPI
 
   ###*
   * Construct VBDCollection
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   VBD - Dependency injection of the VBD class.
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
   constructor: (_session, _VBD, _xenAPI) ->
     debug "constructor()"
@@ -25,9 +27,10 @@ class VBDCollection
     unless _xenAPI
       throw Error "Must provide xenAPI"
 
+    #These can safely go into shared class scope because this constructor is only called once.
     session = _session
-    VBD = _VBD
     xenAPI = _xenAPI
+    VBD = _VBD
 
   ###*
   * List all VBDs
@@ -53,7 +56,7 @@ class VBDCollection
 
     new Promise (resolve, reject) =>
       vbd =
-        VM: vm.getOpaqueRef(),
+        VM: vm.opaqueRef,
         VDI: "OpaqueRef:NULL",
         userdevice: "3",
         mode: VBD.MODES.RO,

@@ -1,17 +1,22 @@
 debug = require('debug') 'XenAPI:VDICollection'
 Promise = require 'bluebird'
+minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class VDICollection
-  session = undefined
   VDI = undefined
+  session = undefined
   xenAPI = undefined
+
+  createVDIInstance = (vdi, opaqueRef) =>
+    return new VDI session, vdi, opaqueRef, xenAPI
 
   ###*
   * Construct VDICollection
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   VDI - Dependency injection of the VBD class.
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
   constructor: (_session, _VDI, _xenAPI) ->
     debug "constructor()"
@@ -22,9 +27,10 @@ class VDICollection
     unless _xenAPI
       throw Error "Must provide xenAPI"
 
+    #These can safely go into shared class scope because this constructor is only called once.
     session = _session
-    VDI = _VDI
     xenAPI = _xenAPI
+    VDI = _VDI
 
   ###*
   * List all VDIs
@@ -38,8 +44,6 @@ class VDICollection
           reject()
 
         debug "Received #{Object.keys(value).length} records"
-        createVDIInstance = (vdi, key) =>
-          return new VDI session, vdi, key, xenAPI
 
         VDIs = _.map value, createVDIInstance
         resolve _.filter VDIs, (vdi) -> vdi

@@ -4,29 +4,33 @@ minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class SRCollection
-  session = undefined
   SR = undefined
+  session = undefined
+  xenAPI = undefined
 
-  createSRInstance = (sr, key) =>
-    return new SR session, sr, key
+  createSRInstance = (sr, opaqueRef) =>
+    return new SR session, sr, opaqueRef, xenAPI
 
   ###*
   * Construct SRCollection
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   SR - Dependency injection of the SR class.
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
-  constructor: (_session, _SR) ->
+  constructor: (_session, _SR, _xenAPI) ->
     debug "constructor()"
     unless _session
       throw Error "Must provide session"
-    else
-      session = _session
-
     unless _SR
       throw Error "Must provide SR"
-    else
-      SR = _SR
+    unless _xenAPI
+      throw Error "Must provide xenAPI"
+
+    #These can safely go into shared class scope because this constructor is only called once.
+    session = _session
+    xenAPI = _xenAPI
+    SR = _SR
 
   ###*
   * List all SRs

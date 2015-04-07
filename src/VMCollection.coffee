@@ -1,32 +1,37 @@
 debug = require('debug') 'XenAPI:VMCollection'
 Promise = require 'bluebird'
+minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class VMCollection
-  session = undefined
   VM = undefined
+  session = undefined
+  xenAPI = undefined
 
-  createVMInstance = (vm, key) =>
+  createVMInstance = (vm, opaqueRef) =>
     if !vm.is_a_template && !vm.is_control_domain
-      return new VM session, vm, key
+      return new VM session, vm, opaqueRef, xenAPI
 
   ###*
   * Construct VMCollection
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   VM - Dependency injection of the VM class.
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
-  constructor: (_session, _VM) ->
+  constructor: (_session, _VM, _xenAPI) ->
     debug "constructor()"
     unless _session
       throw Error "Must provide session"
-    else
-      session = _session
-
     unless _VM
       throw Error "Must provide VM"
-    else
-      VM = _VM
+    unless _xenAPI
+      throw Error "Must provide xenAPI"
+
+    #These can safely go into shared class scope because this constructor is only called once.
+    session = _session
+    xenAPI = _xenAPI
+    VM = _VM
 
   ###*
    * List all VMs

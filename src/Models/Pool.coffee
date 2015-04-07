@@ -2,9 +2,7 @@ debug = require('debug') 'XenAPI:Pool'
 Promise = require 'bluebird'
 
 class Pool
-  key = undefined
   session = undefined
-  pool = undefined
   xenAPI = undefined
 
   ###*
@@ -12,33 +10,34 @@ class Pool
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   pool - A JSON object representing this Pool
-  * @param      {String}   key - The OpaqueRef handle to this Pool
+  * @param      {String}   opaqueRef - The OpaqueRef handle to this Pool
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
-  constructor: (_session, _pool, _key, _xenAPI) ->
+  constructor: (_session, _pool, _opaqueRef, _xenAPI) ->
     debug "constructor()"
     debug _pool
     unless _session
       throw Error "Must provide `session`"
     unless _pool
       throw Error "Must provide `pool`"
-    unless _key
-      throw Error "Must provide `key`"
+    unless _opaqueRef
+      throw Error "Must provide `opaqueRef`"
     unless _xenAPI
       throw Error "Must provide `xenAPI`"
 
+    #These can safely go into class scope because there is only one instance of each.
     session = _session
-    pool = _pool
-    key = _key
     xenAPI = _xenAPI
 
-    @uuid = pool.uuid
-    @name = pool.name_label
-    @description = pool.name_description
+    @opaqueRef = _opaqueRef
+    @uuid = _pool.uuid
+    @name = _pool.name_label
+    @description = _pool.name_description
 
   getDefaultSR: =>
     debug "getDefaultSR()"
     new Promise (resolve, reject) =>
-      session.request("pool.get_default_SR", [key]).then (value) =>
+      session.request("pool.get_default_SR", [@opaqueRef]).then (value) =>
         unless value
           reject()
 

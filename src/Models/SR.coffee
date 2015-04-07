@@ -2,47 +2,42 @@ debug = require('debug') 'XenAPI:SR'
 Promise = require 'bluebird'
 
 class SR
-  key = undefined
   session = undefined
-  sr = undefined
+  xenAPI = undefined
 
   ###*
   * Construct SR
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   sr - A JSON object representing this SR
-  * @param      {String}   key - The OpaqueRef handle to this SR
+  * @param      {String}   opaqueRef - The OpaqueRef handle to this SR
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
-  constructor: (_session, _sr, _key) ->
+  constructor: (_session, _sr, _opaqueRef, _xenAPI) ->
     debug "constructor()"
-    debug _sr
+    debug _sr, _opaqueRef
+
     unless _session
       throw Error "Must provide `session`"
     unless _sr
       throw Error "Must provide `sr`"
-    unless _key
-      throw Error "Must provide `key`"
+    unless _opaqueRef
+      throw Error "Must provide `opaqueRef`"
 
+    #These can safely go into class scope because there is only one instance of each.
     session = _session
-    sr = _sr
-    key = _key
+    xenAPI = _xenAPI
 
-    @uuid = sr.uuid
-    @name = sr.name_label
-    @description = sr.name_description
-    @allowed_operations = sr.allowed_operations
-    @current_operations = sr.current_operations
-    @VDIs = sr.VDIs
-    @PBDs = sr.PBDs
-    @physical_utilisation = sr.physical_utilisation
-    @physical_size = sr.physical_size
-    @unused_space = sr.physical_size - sr.physical_utilisation
-
-  ###*
-  * Return the OpaqueRef that represents this VM
-  * @return     {String}
-  ###
-  getOpaqueRef: =>
-    return key
+    @opaqueRef = _opaqueRef
+    @uuid = _sr.uuid
+    @name = _sr.name_label
+    @description = _sr.name_description
+    @allowed_operations = _sr.allowed_operations
+    @current_operations = _sr.current_operations
+    @VDIs = _sr.VDIs
+    @PBDs = _sr.PBDs
+    @physical_utilisation = _sr.physical_utilisation
+    @physical_size = _sr.physical_size
+    @unused_space = _sr.physical_size - _sr.physical_utilisation
 
 module.exports = SR

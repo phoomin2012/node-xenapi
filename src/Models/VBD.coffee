@@ -2,9 +2,7 @@ debug = require('debug') 'XenAPI:VBD'
 Promise = require 'bluebird'
 
 class VBD
-  key = undefined
   session = undefined
-  vbd = undefined
   xenAPI = undefined
 
   ###*
@@ -12,30 +10,34 @@ class VBD
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   vbd - A JSON object representing this VBD
-  * @param      {String}   key - The OpaqueRef handle to this vbd
+  * @param      {String}   opaqueRef - The OpaqueRef handle to this vbd
+  * @param      {Object}   xenAPI - An instance of XenAPI.
   ###
-  constructor: (_session, _vbd, _key, _xenAPI) ->
+  constructor: (_session, _vbd, _opaqueRef, _xenAPI) ->
     debug "constructor()"
-    debug _vbd
+    debug _vbd, _opaqueRef
+
     unless _session
       throw Error "Must provide `session`"
     unless _vbd
       throw Error "Must provide `vbd`"
-    unless _key
-      throw Error "Must provide `key`"
+    unless _opaqueRef
+      throw Error "Must provide `opaqueRef`"
+    unless _xenAPI
+      throw Error "Must provide `xenAPI`"
 
+    #These can safely go into class scope because there is only one instance of each.
     session = _session
-    vbd = _vbd
-    key = _key
     xenAPI = _xenAPI
 
-    @uuid = vbd.uuid
-    @VM = vbd.VM
-    @VDI = vbd.VDI
-    @userdevice = vbd.userdevice
-    @mode = vbd.mode
-    @type = vbd.type
-    @empty = vbd.empty
+    @opaqueRef = _opaqueRef
+    @uuid = _vbd.uuid
+    @VM = _vbd.VM
+    @VDI = _vbd.VDI
+    @userdevice = _vbd.userdevice
+    @mode = _vbd.mode
+    @type = _vbd.type
+    @empty = _vbd.empty
 
   toJSON: =>
     {
@@ -53,7 +55,7 @@ class VBD
 
   insert: (vdi) =>
     new Promise (resolve, reject) =>
-      session.request("VBD.insert", [key, vdi]).then (value) =>
+      session.request("VBD.insert", [@opaqueRef, vdi]).then (value) =>
         debug value
         resolve()
       .catch (e) ->
@@ -69,13 +71,6 @@ class VBD
       .catch (e) ->
         debug e
         reject e
-
-  ###*
-   * Return the OpaqueRef that represents this Template
-   * @return     {String}
-  ###
-  getOpaqueRef: =>
-    return key
 
   VBD.MODES =
     RO: "RO",

@@ -2,58 +2,44 @@ debug = require('debug') 'XenAPI:VM'
 Promise = require 'bluebird'
 
 class VM
-  key = undefined
   session = undefined
-  vm = undefined
+  xenAPI = undefined
 
   ###*
   * Construct VM
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   vm - A JSON object representing this VM
-  * @param      {String}   key - The OpaqueRef handle to this VM
+  * @param      {String}   opaqueRef - The OpaqueRef handle to this VM
+  * @param      {Object}   xenAPI - An instance of XenAPI.
   ###
-  constructor: (_session, _vm, _key) ->
+  constructor: (_session, _vm, _opaqueRef, _xenAPI) ->
     debug "constructor()"
-    debug _vm
+    debug _vm, _opaqueRef
+
     unless _session
       throw Error "Must provide `session`"
-    else
-      session = _session
-
     unless _vm
       throw Error "Must provide `vm`"
-
+    unless _opaqueRef
+      throw Error "Must provide `opaqueRef`"
+    unless _xenAPI
+      throw Error "Must provide `xenAPI`"
     unless !_vm.is_a_template && !_vm.is_control_domain && _vm.uuid
       throw Error "`vm` does not describe a valid VM"
-    else
-      vm = _vm
 
-    unless _key
-      throw Error "Must provide `key`"
-    else
-      key = _key
+    #These can safely go into class scope because there is only one instance of each.
+    session = _session
+    xenAPI = _xenAPI
 
-    @uuid = vm.uuid
-    @name = vm.name_label
-    @description = vm.name_description
-    @other_config = vm.other_config
-    @xenToolsInstalled = !(vm.guest_metrics == 'OpaqueRef:NULL')
-    @powerState = vm.power_state
-    @VIFs = vm.VIFs
-
-    @POWER_STATES =
-      HALTED: 'Halted',
-      PAUSED: 'Paused',
-      RUNNING: 'Running',
-      SUSPENDED: 'Suspended'
-
-  ###*
-   * Return the OpaqueRef that represents this VM
-   * @return     {String}
-  ###
-  getOpaqueRef: =>
-    return key
+    @opaqueRef = _opaqueRef
+    @uuid = _vm.uuid
+    @name = _vm.name_label
+    @description = _vm.name_description
+    @other_config = _vm.other_config
+    @xenToolsInstalled = !(_vm.guest_metrics == 'OpaqueRef:NULL')
+    @powerState = _vm.power_state
+    @VIFs = _vm.VIFs
 
   ###*
    * Refresh the power state of this VM
@@ -63,7 +49,7 @@ class VM
     debug "refreshPowerState()"
 
     new Promise (resolve, reject) =>
-      session.request("VM.get_power_state", [key]).then (value) =>
+      session.request("VM.get_power_state", [@opaqueRef]).then (value) =>
         debug value
         @powerState = value
         resolve value
@@ -79,10 +65,10 @@ class VM
     debug "pause()"
     new Promise (resolve, reject) =>
       @refreshPowerState().then (currentPowerState) =>
-        unless currentPowerState == @POWER_STATES.RUNNING
-          reject "VM not in #{@POWER_STATES.RUNNING} power state."
+        unless currentPowerState == VM.POWER_STATES.RUNNING
+          reject "VM not in #{VM.POWER_STATES.RUNNING} power state."
         else
-          session.request("VM.pause", [key]).then (value) =>
+          session.request("VM.pause", [@opaqueRef]).then (value) =>
             resolve()
           .catch (e) ->
             debug e
@@ -99,10 +85,10 @@ class VM
     debug "unpause()"
     new Promise (resolve, reject) =>
       @refreshPowerState().then (currentPowerState) =>
-        unless currentPowerState == @POWER_STATES.PAUSED
-          reject "VM not in #{@POWER_STATES.PAUSED} power state."
+        unless currentPowerState == VM.POWER_STATES.PAUSED
+          reject "VM not in #{VM.POWER_STATES.PAUSED} power state."
         else
-          session.request("VM.unpause", [key]).then (value) =>
+          session.request("VM.unpause", [@opaqueRef]).then (value) =>
             resolve()
           .catch (e) ->
             debug e
@@ -119,10 +105,10 @@ class VM
     debug "suspend()"
     new Promise (resolve, reject) =>
       @refreshPowerState().then (currentPowerState) =>
-        unless currentPowerState == @POWER_STATES.RUNNING
-          reject "VM not in #{@POWER_STATES.RUNNING} power state."
+        unless currentPowerState == VM.POWER_STATES.RUNNING
+          reject "VM not in #{VM.POWER_STATES.RUNNING} power state."
         else
-          session.request("VM.suspend", [key]).then (value) =>
+          session.request("VM.suspend", [@opaqueRef]).then (value) =>
             resolve()
           .catch (e) ->
             debug e
@@ -139,13 +125,13 @@ class VM
     debug "resume()"
     new Promise (resolve, reject) =>
       @refreshPowerState().then (currentPowerState) =>
-        unless currentPowerState == @POWER_STATES.SUSPENDED
-          reject "VM not in #{@POWER_STATES.SUSPENDED} power state."
+        unless currentPowerState == VM.POWER_STATES.SUSPENDED
+          reject "VM not in #{VM.POWER_STATES.SUSPENDED} power state."
         else
           startPaused = false
           force = false
 
-          session.request("VM.resume", [key, startPaused, force]).then (value) =>
+          session.request("VM.resume", [@opaqueRef, startPaused, force]).then (value) =>
             resolve()
           .catch (e) ->
             debug e
@@ -157,10 +143,16 @@ class VM
   start: =>
     debug "start()"
     new Promise (resolve, reject) =>
-      session.request("VM.start", [key, false, false]).then (value) =>
+      session.request("VM.start", [@opaqueRef, false, false]).then (value) =>
         resolve()
       .catch (e) ->
         debug e
         reject e
+
+  VM.POWER_STATES =
+    HALTED: 'Halted',
+    PAUSED: 'Paused',
+    RUNNING: 'Running',
+    SUSPENDED: 'Suspended'
 
 module.exports = VM

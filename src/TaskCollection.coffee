@@ -1,28 +1,37 @@
 debug = require('debug') 'XenAPI:TaskCollection'
 Promise = require 'bluebird'
+minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class TaskCollection
-  session = undefined
   Task = undefined
+  session = undefined
+  xenAPI = undefined
+
+  createTaskInstance = (task, opaqueRef) =>
+    return new Task session, task, opaqueRef, xenAPI
 
   ###*
   * Construct TaskCollection
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   Task - Dependency injection of the Task class.
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
-  constructor: (_session, _Task) ->
+  constructor: (_session, _Task, _xenAPI) ->
     debug "constructor()"
     unless _session
       throw Error "Must provide session"
-    else
-      session = _session
-
     unless _Task
       throw Error "Must provide Task"
-    else
-      Task = _Task
+    unless _xenAPI
+      throw Error "Must provide xenAPI"
+
+    #These can safely go into shared class scope because this constructor is only called once.
+    session = _session
+    xenAPI = _xenAPI
+    Task = _Task
+
 
   ###*
    * List all Tasks
@@ -35,11 +44,6 @@ class TaskCollection
         unless value
           reject()
         debug "Received #{Object.keys(value).length} records"
-        createTaskInstance = (task, key) =>
-          try
-            return new Task session, task, key
-          catch
-            return null
 
         Tasks = _.map value, createTaskInstance
         resolve _.filter Tasks, (task) -> task

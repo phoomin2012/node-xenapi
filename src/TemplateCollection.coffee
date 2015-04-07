@@ -4,33 +4,34 @@ minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class TemplateCollection
-  session = undefined
   Template = undefined
+  session = undefined
   xenAPI = undefined
 
-  createTemplateInstance = (template, key) =>
+  createTemplateInstance = (template, opaqueRef) =>
     if template.is_a_template && !template.is_control_domain
-      return new Template session, template, key, xenAPI
+      return new Template session, template, opaqueRef, xenAPI
 
   ###*
   * Construct TemplateCollection
   * @class
   * @param      {Object}   session - An instance of Session
   * @param      {Object}   Template - Dependency injection of the Template class.
-  * @param      {Object}   XenAPI - Dependecy injection of the XenAPI object.
+  * @param      {Object}   xenAPI - An instance of XenAPI
   ###
-  constructor: (_session, _Template, _XenAPI) ->
+  constructor: (_session, _Template, _xenAPI) ->
     debug "constructor()"
     unless _session
       throw Error "Must provide session"
     unless _Template
       throw Error "Must provide Template"
-    unless _XenAPI
-      throw Error "Must provide XenAPI"
+    unless _xenAPI
+      throw Error "Must provide xenAPI"
 
+    #These can safely go into shared class scope because this constructor is only called once.
     session = _session
+    xenAPI = _xenAPI
     Template = _Template
-    xenAPI = _XenAPI
 
   ###*
   * List all Templates
