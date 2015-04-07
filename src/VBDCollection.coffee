@@ -60,7 +60,7 @@ class VBDCollection
         type: VBD.TYPES.CD,
         empty: true
 
-      newVBD = new VBD session, vbd, "OpaqueRef:NULL"
+      newVBD = new VBD session, vbd, "OpaqueRef:NULL", xenAPI
 
       resolve newVBD
 
