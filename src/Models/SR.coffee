@@ -38,4 +38,11 @@ class SR
     @physical_size = sr.physical_size
     @unused_space = sr.physical_size - sr.physical_utilisation
 
+  ###*
+  * Return the OpaqueRef that represents this VM
+  * @return     {String}
+  ###
+  getOpaqueRef: =>
+    return key
+
 module.exports = SR
