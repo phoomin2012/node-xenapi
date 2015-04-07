@@ -7,6 +7,9 @@ class VBDCollection
   VBD = undefined
   xenAPI = undefined
 
+  createVBDInstance = (vbd, key) =>
+    return new VBD session, vbd, key, xenAPI
+
   ###*
   * Construct VBDCollection
   * @class
@@ -38,8 +41,6 @@ class VBDCollection
           reject()
 
         debug "Received #{Object.keys(value).length} records"
-        createVBDInstance = (vbd, key) =>
-          debug vbd
 
         VBDs = _.map value, createVBDInstance
         resolve _.filter VBDs, (vbd) -> vbd
