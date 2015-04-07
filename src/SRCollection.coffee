@@ -1,5 +1,6 @@
 debug = require('debug') 'XenAPI:SRCollection'
 Promise = require 'bluebird'
+minimatch = require 'minimatch'
 _ = require 'lodash'
 
 class SRCollection
@@ -42,6 +43,20 @@ class SRCollection
 
         SRs = _.map value, createSRInstance
         resolve _.filter SRs, (sr) -> sr
+      .catch (e) ->
+        debug e
+        reject e
+
+  findNamed: (name) =>
+    debug "findNamed(#{name})"
+    new Promise (resolve, reject) =>
+      @list().then (SRs) =>
+        matchSRName = (sr) ->
+          if minimatch(sr.name, name, {nocase: true})
+            return sr
+
+        matches = _.map SRs, matchSRName
+        resolve _.filter matches, (sr) -> sr
       .catch (e) ->
         debug e
         reject e
