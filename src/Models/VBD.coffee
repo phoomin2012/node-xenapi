@@ -51,6 +51,15 @@ class VBD
       qos_algorithm_params: {}
     }
 
+  insert: (vdi) =>
+    new Promise (resolve, reject) =>
+      session.request("VBD.insert", [key, vdi]).then (value) =>
+        debug value
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
   push: =>
     new Promise (resolve, reject) =>
       session.request("VBD.create", [@.toJSON()]).then (value) =>
