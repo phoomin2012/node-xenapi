@@ -155,4 +155,27 @@ class VM
     RUNNING: 'Running',
     SUSPENDED: 'Suspended'
 
+  VM.DEFAULT_CONFIG =
+    user_version: "0",
+    is_a_template: false,
+    is_control_domain: false,
+    affinity: undefined,
+    VCPUs_params: {},
+    VCPUs_at_startup: "1",
+    actions_after_shutdown: "destroy",
+    actions_after_reboot: "restart",
+    actions_after_crash: "restart",
+    PV_bootloader: "pygrub",
+    PV_kernel: undefined,
+    PV_ramdisk: undefined,
+    PV_args: "console=hvc0",
+    PV_bootloader_args: undefined,
+    PV_legacy_args: undefined,
+    HVM_boot_policy: "",
+    HVM_boot_params: {},
+    platform: {},
+    PCI_bus: undefined,
+    other_config: {},
+    recommendations: ""
+
 module.exports = VM
