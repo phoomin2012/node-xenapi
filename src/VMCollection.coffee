@@ -51,6 +51,37 @@ class VMCollection
         debug e
         reject e
 
+  createVM: (ram, cpuCount, label) =>
+      debug "createVM()"
+      unless ram
+        throw Error "Must provide RAM specification"
+      unless cpuCount
+        throw Error "Must provide CPU specification"
+      unless label
+        throw Error "Must provide label"
+
+      new Promise (resolve, reject) =>
+        memoryValue = ram * 1048576;
+        vCPUMax = cpuCount;
+        extraConfig =
+          name_label: label,
+          memory_static_max: memoryValue.toString(),
+          memory_static_min: memoryValue.toString(),
+          memory_dynamic_max: memoryValue.toString(),
+          memory_dynamic_min: memoryValue.toString(),
+          VCPUs_max: vCPUMax.toString()
+
+        config = _.extend VM.DEFAULT_CONFIG, extraConfig
+
+        session.request("VM.create", [config]).then (value) =>
+          unless value
+            reject()
+
+          @findOpaqueRef(value).then (vm) ->
+            resolve vm
+        .catch (e) ->
+          debug e
+          reject e
 
   findOpaqueRef: (opaqueRef) =>
     debug "findOpaqueRef(#{opaqueRef})"
