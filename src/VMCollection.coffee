@@ -9,8 +9,10 @@ class VMCollection
   xenAPI = undefined
 
   createVMInstance = (vm, opaqueRef) =>
-    if !vm.is_a_template && !vm.is_control_domain
+    try
       return new VM session, vm, opaqueRef, xenAPI
+    catch
+      return null
 
   ###*
   * Construct VMCollection
