@@ -19,14 +19,18 @@
   chai.use(chaiAsPromised);
 
   describe("VIF", function() {
-    var VIF, session;
+    var VIF, XenAPI, session;
     session = void 0;
     VIF = void 0;
+    XenAPI = void 0;
     beforeEach(function() {
       session = {
         request: function() {}
       };
-      return VIF = require('../../lib/Models/VIF');
+      VIF = require('../../lib/Models/VIF');
+      return XenAPI = {
+        'session': session
+      };
     });
     return describe("constructor", function() {
       var key;
@@ -45,10 +49,15 @@
           return new VIF(session);
         }).to["throw"](/Must provide `vif`/);
       });
-      return it("should throw unless key is provided", function() {
+      it("should throw unless opaqueRef is provided", function() {
         return expect(function() {
           return new VIF(session, {});
-        }).to["throw"](/Must provide `key`/);
+        }).to["throw"](/Must provide `opaqueRef`/);
+      });
+      return it("should throw unless xenAPI is provided", function() {
+        return expect(function() {
+          return new VIF(session, {}, "OpaqueRef");
+        }).to["throw"](/Must provide `xenAPI`/);
       });
     });
   });

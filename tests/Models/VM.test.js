@@ -19,26 +19,30 @@
   chai.use(chaiAsPromised);
 
   describe("VM", function() {
-    var VM, session;
+    var VM, XenAPI, session;
     session = void 0;
     VM = void 0;
+    XenAPI = void 0;
     beforeEach(function() {
       session = {
         request: function() {}
       };
-      return VM = require('../../lib/Models/VM');
+      VM = require('../../lib/Models/VM');
+      return XenAPI = {
+        'session': session
+      };
     });
     describe("constructor", function() {
-      var key, validVM;
+      var opaqueRef, validVM;
       validVM = void 0;
-      key = void 0;
+      opaqueRef = void 0;
       beforeEach(function() {
         validVM = {
           uuid: 'abcd',
           is_a_template: false,
           is_control_domain: false
         };
-        return key = 'OpaqueRef:abcd';
+        return opaqueRef = 'OpaqueRef:abcd';
       });
       afterEach(function() {});
       it("should throw unless session is provided", function() {
@@ -51,12 +55,22 @@
           return new VM(session);
         }).to["throw"](/Must provide `vm`/);
       });
+      it("should throw unless opaqueRef is provided", function() {
+        return expect(function() {
+          return new VM(session, validVM);
+        }).to["throw"](/Must provide `opaqueRef`/);
+      });
+      it("should throw unless XenAPI is provided", function() {
+        return expect(function() {
+          return new VM(session, validVM, "OpaqueRef");
+        }).to["throw"](/Must provide `xenAPI`/);
+      });
       it("should throw if vm does not have a UUID", function() {
         return expect(function() {
           return new VM(session, {
             is_a_template: false,
             is_control_domain: false
-          });
+          }, opaqueRef, XenAPI);
         }).to["throw"](/`vm` does not describe a valid VM/);
       });
       it("should throw if vm is a template", function() {
@@ -65,7 +79,7 @@
             uuid: 'abcd',
             is_a_template: true,
             is_control_domain: false
-          });
+          }, opaqueRef, XenAPI);
         }).to["throw"](/`vm` does not describe a valid VM/);
       });
       it("should throw if vm is a control domain", function() {
@@ -74,56 +88,51 @@
             uuid: 'abcd',
             is_a_template: false,
             is_control_domain: true
-          });
+          }, opaqueRef, XenAPI);
         }).to["throw"](/`vm` does not describe a valid VM/);
-      });
-      it("should throw unless key is provided", function() {
-        return expect(function() {
-          return new VM(session, validVM);
-        }).to["throw"](/Must provide `key`/);
       });
       it("should assign the passed uuid to `uuid` property", function() {
         var vm, vmTemplate;
         vmTemplate = validVM;
         vmTemplate.uuid = 'abcd';
-        vm = new VM(session, vmTemplate, key);
+        vm = new VM(session, vmTemplate, opaqueRef, XenAPI);
         return expect(vm.uuid).to.equal(vmTemplate.uuid);
       });
       it("should assign the passed label to `name` property", function() {
         var vm, vmTemplate;
         vmTemplate = validVM;
         vmTemplate.name_label = 'abcd';
-        vm = new VM(session, vmTemplate, key);
+        vm = new VM(session, vmTemplate, opaqueRef, XenAPI);
         return expect(vm.name).to.equal(vmTemplate.name_label);
       });
       it("should assign the passed description to `description` property", function() {
         var vm, vmTemplate;
         vmTemplate = validVM;
         vmTemplate.name_description = 'abcd';
-        vm = new VM(session, vmTemplate, key);
+        vm = new VM(session, vmTemplate, opaqueRef, XenAPI);
         return expect(vm.description).to.equal(vmTemplate.name_description);
       });
       it("should set the `xenToolsInstalled` property based on whether guest_metrics are available", function() {
         var vm, vmTemplate;
         vmTemplate = validVM;
         vmTemplate.guest_metrics = 'OpaqueRef:NULL';
-        vm = new VM(session, vmTemplate, key);
+        vm = new VM(session, vmTemplate, opaqueRef, XenAPI);
         expect(vm.xenToolsInstalled).to.equal(false);
         vmTemplate.guest_metrics = 'OpaqueRef:abcd';
-        vm = new VM(session, vmTemplate, key);
+        vm = new VM(session, vmTemplate, opaqueRef, XenAPI);
         return expect(vm.xenToolsInstalled).to.equal(true);
       });
       return it("should assign the passed power state to `powerState` property", function() {
         var vm, vmTemplate;
         vmTemplate = validVM;
         vmTemplate.power_state = 'abcd';
-        vm = new VM(session, vmTemplate, key);
+        vm = new VM(session, vmTemplate, opaqueRef, XenAPI);
         return expect(vm.powerState).to.equal(vmTemplate.power_state);
       });
     });
     describe("refreshPowerState()", function() {
-      var key, requestStub, vm;
-      key = void 0;
+      var opaqueRef, requestStub, vm;
+      opaqueRef = void 0;
       vm = void 0;
       requestStub = void 0;
       beforeEach(function() {
@@ -133,8 +142,8 @@
           is_a_template: false,
           is_control_domain: false
         };
-        key = 'OpaqueRef:abcd';
-        vm = new VM(session, validVM, key);
+        opaqueRef = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, opaqueRef, XenAPI);
         return requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
             return resolve();
@@ -152,7 +161,7 @@
       });
       it("should pass the OpaqueRef of the VM to the API", function(done) {
         return vm.refreshPowerState().then(function() {
-          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [opaqueRef]);
           return done();
         })["catch"](function(e) {
           return done(e);
@@ -204,8 +213,8 @@
       });
     });
     describe("pause()", function() {
-      var key, refreshPowerStateStub, requestStub, vm;
-      key = void 0;
+      var opaqueRef, refreshPowerStateStub, requestStub, vm;
+      opaqueRef = void 0;
       vm = void 0;
       requestStub = void 0;
       refreshPowerStateStub = void 0;
@@ -216,8 +225,8 @@
           is_a_template: false,
           is_control_domain: false
         };
-        key = 'OpaqueRef:abcd';
-        vm = new VM(session, validVM, key);
+        opaqueRef = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, opaqueRef, XenAPI);
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
             return resolve();
@@ -289,7 +298,7 @@
       });
       return it("should pass OpaqueRef for the VM to the API", function(done) {
         return vm.pause().then(function() {
-          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [opaqueRef]);
           return done();
         })["catch"](function(e) {
           return done(e);
@@ -297,8 +306,8 @@
       });
     });
     describe("unpause()", function() {
-      var key, refreshPowerStateStub, requestStub, vm;
-      key = void 0;
+      var opaqueRef, refreshPowerStateStub, requestStub, vm;
+      opaqueRef = void 0;
       vm = void 0;
       requestStub = void 0;
       refreshPowerStateStub = void 0;
@@ -309,8 +318,8 @@
           is_a_template: false,
           is_control_domain: false
         };
-        key = 'OpaqueRef:abcd';
-        vm = new VM(session, validVM, key);
+        opaqueRef = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, opaqueRef, XenAPI);
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
             return resolve();
@@ -382,7 +391,7 @@
       });
       return it("should pass OpaqueRef for the VM to the API", function(done) {
         return vm.unpause().then(function() {
-          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [opaqueRef]);
           return done();
         })["catch"](function(e) {
           return done(e);
@@ -390,8 +399,8 @@
       });
     });
     describe("suspend()", function() {
-      var key, refreshPowerStateStub, requestStub, vm;
-      key = void 0;
+      var opaqueRef, refreshPowerStateStub, requestStub, vm;
+      opaqueRef = void 0;
       vm = void 0;
       requestStub = void 0;
       refreshPowerStateStub = void 0;
@@ -402,8 +411,8 @@
           is_a_template: false,
           is_control_domain: false
         };
-        key = 'OpaqueRef:abcd';
-        vm = new VM(session, validVM, key);
+        opaqueRef = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, opaqueRef, XenAPI);
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
             return resolve();
@@ -475,7 +484,7 @@
       });
       return it("should pass OpaqueRef for the VM to the API", function(done) {
         return vm.suspend().then(function() {
-          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key]);
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [opaqueRef]);
           return done();
         })["catch"](function(e) {
           return done(e);
@@ -483,8 +492,8 @@
       });
     });
     return describe("resume()", function() {
-      var key, refreshPowerStateStub, requestStub, vm;
-      key = void 0;
+      var opaqueRef, refreshPowerStateStub, requestStub, vm;
+      opaqueRef = void 0;
       vm = void 0;
       requestStub = void 0;
       refreshPowerStateStub = void 0;
@@ -495,8 +504,8 @@
           is_a_template: false,
           is_control_domain: false
         };
-        key = 'OpaqueRef:abcd';
-        vm = new VM(session, validVM, key);
+        opaqueRef = 'OpaqueRef:abcd';
+        vm = new VM(session, validVM, opaqueRef, XenAPI);
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
             return resolve();
@@ -568,7 +577,7 @@
       });
       it("should pass OpaqueRef for the VM to the API", function(done) {
         return vm.resume().then(function() {
-          expect(requestStub).to.have.been.calledWith(sinon.match.any, [key, sinon.match.any, sinon.match.any]);
+          expect(requestStub).to.have.been.calledWith(sinon.match.any, [opaqueRef, sinon.match.any, sinon.match.any]);
           return done();
         })["catch"](function(e) {
           return done(e);

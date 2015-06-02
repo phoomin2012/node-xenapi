@@ -19,16 +19,20 @@
   chai.use(chaiAsPromised);
 
   describe("VIFCollection", function() {
-    var VIF, VIFCollection, session;
+    var VIF, VIFCollection, XenAPI, session;
     session = void 0;
     VIFCollection = void 0;
     VIF = void 0;
+    XenAPI = void 0;
     beforeEach(function() {
       session = {
         request: function() {}
       };
       VIFCollection = require('../lib/VIFCollection');
-      return VIF = require('../lib/Models/VIF');
+      VIF = require('../lib/Models/VIF');
+      return XenAPI = {
+        'session': session
+      };
     });
     describe("constructor", function() {
       beforeEach(function() {});
@@ -38,10 +42,15 @@
           return new VIFCollection();
         }).to["throw"](/Must provide session/);
       });
-      return it("should throw unless VIF is provided", function() {
+      it("should throw unless VIF is provided", function() {
         return expect(function() {
           return new VIFCollection(session);
         }).to["throw"](/Must provide VIF/);
+      });
+      return it("should throw unless XenAPI is provided", function() {
+        return expect(function() {
+          return new VIFCollection(session, VIF);
+        }).to["throw"](/Must provide xenAPI/);
       });
     });
     return describe("list()", function(done) {
@@ -54,7 +63,7 @@
             return resolve([]);
           });
         });
-        return vifCollection = new VIFCollection(session, VIF);
+        return vifCollection = new VIFCollection(session, VIF, XenAPI);
       });
       afterEach(function() {
         return requestStub.restore();

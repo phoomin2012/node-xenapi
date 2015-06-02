@@ -19,16 +19,20 @@
   chai.use(chaiAsPromised);
 
   describe("TaskCollection", function() {
-    var Task, TaskCollection, session;
+    var Task, TaskCollection, XenAPI, session;
     session = void 0;
     TaskCollection = void 0;
     Task = void 0;
+    XenAPI = void 0;
     beforeEach(function() {
       session = {
         request: function() {}
       };
       TaskCollection = require('../lib/TaskCollection');
-      return Task = require('../lib/Models/Task');
+      Task = require('../lib/Models/Task');
+      return XenAPI = {
+        'session': session
+      };
     });
     describe("constructor", function() {
       beforeEach(function() {});
@@ -38,10 +42,15 @@
           return new TaskCollection();
         }).to["throw"](/Must provide session/);
       });
-      return it("should throw unless Task is provided", function() {
+      it("should throw unless Task is provided", function() {
         return expect(function() {
           return new TaskCollection(session);
         }).to["throw"](/Must provide Task/);
+      });
+      return it("should throw unless XenAPI is provided", function() {
+        return expect(function() {
+          return new TaskCollection(session, Task);
+        }).to["throw"](/Must provide xenAPI/);
       });
     });
     return describe("list()", function(done) {
@@ -54,7 +63,7 @@
             return resolve([]);
           });
         });
-        return taskCollection = new TaskCollection(session, Task);
+        return taskCollection = new TaskCollection(session, Task, XenAPI);
       });
       afterEach(function() {
         return requestStub.restore();

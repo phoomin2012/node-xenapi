@@ -19,16 +19,20 @@
   chai.use(chaiAsPromised);
 
   describe("VMCollection", function() {
-    var VM, VMCollection, session;
+    var VM, VMCollection, XenAPI, session;
     session = void 0;
     VMCollection = void 0;
     VM = void 0;
+    XenAPI = void 0;
     beforeEach(function() {
       session = {
         request: function() {}
       };
       VMCollection = require('../lib/VMCollection');
-      return VM = require('../lib/Models/VM');
+      VM = require('../lib/Models/VM');
+      return XenAPI = {
+        'session': session
+      };
     });
     describe("constructor", function() {
       beforeEach(function() {});
@@ -38,10 +42,15 @@
           return new VMCollection();
         }).to["throw"](/Must provide session/);
       });
-      return it("should throw unless VM is provided", function() {
+      it("should throw unless VM is provided", function() {
         return expect(function() {
           return new VMCollection(session);
         }).to["throw"](/Must provide VM/);
+      });
+      return it("should throw unless xenAPI is provided", function() {
+        return expect(function() {
+          return new VMCollection(session, VM);
+        }).to["throw"](/Must provide xenAPI/);
       });
     });
     return describe("list()", function(done) {
@@ -54,7 +63,7 @@
             return resolve([]);
           });
         });
-        return vmCollection = new VMCollection(session, VM);
+        return vmCollection = new VMCollection(session, VM, XenAPI);
       });
       afterEach(function() {
         return requestStub.restore();
@@ -106,11 +115,11 @@
         requestStub.restore();
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
-            return resolve([
-              {
+            return resolve({
+              "OpaqueRef": {
                 is_a_template: true
               }
-            ]);
+            });
           });
         });
         return vmCollection.list().then(function(vms) {
@@ -124,11 +133,11 @@
         requestStub.restore();
         requestStub = sinon.stub(session, "request", function() {
           return new Promise(function(resolve, reject) {
-            return resolve([
-              {
+            return resolve({
+              "OpaqueRef": {
                 is_control_domain: true
               }
-            ]);
+            });
           });
         });
         return vmCollection.list().then(function(vms) {

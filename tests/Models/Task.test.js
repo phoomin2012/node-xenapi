@@ -19,9 +19,10 @@
   chai.use(chaiAsPromised);
 
   describe("Task", function() {
-    var Task, requestStub, session;
+    var Task, XenAPI, requestStub, session;
     session = void 0;
     Task = void 0;
+    XenAPI = void 0;
     requestStub = void 0;
     beforeEach(function() {
       session = {
@@ -32,7 +33,10 @@
           return resolve();
         });
       });
-      return Task = require('../../lib/Models/Task');
+      Task = require('../../lib/Models/Task');
+      return XenAPI = {
+        'session': session
+      };
     });
     describe("constructor", function() {
       beforeEach(function() {});
@@ -47,16 +51,26 @@
           return new Task(session);
         }).to["throw"](/Must provide `task`/);
       });
-      it("should throw unless OpaqueRef key is provided", function() {
+      it("should throw unless OpaqueRef is provided", function() {
         return expect(function() {
           return new Task(session, {});
-        }).to["throw"](/Must provide `key`/);
+        }).to["throw"](/Must provide `opaqueRef`/);
+      });
+      it("should throw unless XenAPI is provided", function() {
+        var validTask;
+        validTask = {
+          allowed_operations: [],
+          status: "success"
+        };
+        return expect(function() {
+          return new Task(session, validTask, "OpaqueRef");
+        }).to["throw"](/Must provide `xenAPI`/);
       });
       it("should throw if a JSON task does not provide a valid representation of Task", function() {
         var invalidTask;
         invalidTask = {};
         return expect(function() {
-          return new Task(session, invalidTask, "OpaqueRef");
+          return new Task(session, invalidTask, "OpaqueRef", XenAPI);
         }).to["throw"](/`task` does not describe a valid Task/);
       });
       it("should not throw if a JSON task provides a valid representation of Task", function() {
@@ -66,7 +80,7 @@
           status: "success"
         };
         return expect(function() {
-          return new Task(session, validTask, "OpaqueRef");
+          return new Task(session, validTask, "OpaqueRef", XenAPI);
         }).not.to["throw"]();
       });
       it("should assign the `uuid` property from the JSON representation to itself", function() {
@@ -76,7 +90,7 @@
           status: "success",
           uuid: "abcd1234"
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.uuid).to.equal(validTask.uuid);
       });
       it("should assign the `name_label` property from the JSON representation to itself", function() {
@@ -86,7 +100,7 @@
           status: "success",
           name_label: "abcd1234"
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.name).to.equal(validTask.name_label);
       });
       it("should assign the `name_description` property from the JSON representation to itself", function() {
@@ -96,7 +110,7 @@
           status: "success",
           name_description: "abcd1234"
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.description).to.equal(validTask.name_description);
       });
       it("should assign the `allowed_operations` property from the JSON representation to itself", function() {
@@ -105,7 +119,7 @@
           allowed_operations: [],
           status: "success"
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.allowed_operations).to.deep.equal(validTask.allowed_operations);
       });
       it("should assign the `status` property from the JSON representation to itself", function() {
@@ -114,7 +128,7 @@
           allowed_operations: [],
           status: "success"
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.status).to.equal(validTask.status);
       });
       it("should assign the `created` property from the JSON representation to itself", function() {
@@ -124,7 +138,7 @@
           status: "success",
           created: new Date()
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.created).to.equal(validTask.created);
       });
       it("should assign the `finished` property from the JSON representation to itself", function() {
@@ -134,7 +148,7 @@
           status: "success",
           finished: new Date()
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.finished).to.equal(validTask.finished);
       });
       return it("should assign the `progress` property from the JSON representation to itself", function() {
@@ -144,7 +158,7 @@
           status: "success",
           progress: 0
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.progress).to.equal(validTask.progress);
       });
     });
@@ -157,7 +171,7 @@
           allowed_operations: ["cancel"],
           status: "success"
         };
-        return task = new Task(session, validTask, "OpaqueRef");
+        return task = new Task(session, validTask, "OpaqueRef", XenAPI);
       });
       afterEach(function() {});
       it("should return a Promise", function() {
@@ -168,7 +182,7 @@
           allowed_operations: [],
           status: "success"
         };
-        task = new Task(session, validTask, "OpaqueRef");
+        task = new Task(session, validTask, "OpaqueRef", XenAPI);
         return expect(task.cancel()).to.eventually.be.rejectedWith(/Operation is not allowed/).and.notify(done);
       });
       it("should call `task.cancel` on the API", function(done) {
@@ -182,9 +196,9 @@
       return it("should call `task.cancel` with the OpaqueRef of the Task", function(done) {
         var opaqueRef;
         opaqueRef = "abcd1234";
-        task = new Task(session, validTask, opaqueRef);
+        task = new Task(session, validTask, opaqueRef, XenAPI);
         return task.cancel().then(function() {
-          expect(requestStub).to.have.been.calledWith("task.cancel", opaqueRef);
+          expect(requestStub).to.have.been.calledWith("task.cancel", [opaqueRef]);
           return done();
         })["catch"](function(e) {
           return done(e);
