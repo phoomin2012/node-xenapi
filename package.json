@@ -29,6 +29,10 @@
     "xenapi",
     "xenserver"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dave-irvine/node-xenapi.git"
+  },
   "author": "Dave Irvine <dave@daveirvine.me>",
   "license": "MIT"
 }
