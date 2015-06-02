@@ -12,6 +12,7 @@ describe "TaskCollection", ->
 	session = undefined
 	TaskCollection = undefined
 	Task = undefined
+	XenAPI = undefined
 
 	beforeEach ->
 		session =
@@ -19,6 +20,8 @@ describe "TaskCollection", ->
 
 		TaskCollection = require '../lib/TaskCollection'
 		Task = require '../lib/Models/Task'
+		XenAPI =
+			'session': session
 
 	describe "constructor", ->
 		beforeEach ->
@@ -31,6 +34,9 @@ describe "TaskCollection", ->
 		it "should throw unless Task is provided", ->
 			expect(-> new TaskCollection session).to.throw /Must provide Task/
 
+		it "should throw unless XenAPI is provided", ->
+			expect(-> new TaskCollection session, Task).to.throw /Must provide xenAPI/
+
 	describe "list()", (done) ->
 		requestStub = undefined
 		taskCollection = undefined
@@ -40,7 +46,7 @@ describe "TaskCollection", ->
 				new Promise (resolve, reject) ->
 					resolve([])
 
-			taskCollection = new TaskCollection session, Task
+			taskCollection = new TaskCollection session, Task, XenAPI
 
 		afterEach ->
 			requestStub.restore()

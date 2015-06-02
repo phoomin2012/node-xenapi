@@ -12,6 +12,7 @@ describe "VIFCollection", ->
   session = undefined
   VIFCollection = undefined
   VIF = undefined
+  XenAPI = undefined
 
   beforeEach ->
     session =
@@ -19,6 +20,9 @@ describe "VIFCollection", ->
 
     VIFCollection = require '../lib/VIFCollection'
     VIF = require '../lib/Models/VIF'
+
+    XenAPI =
+      'session': session
 
   describe "constructor", ->
     beforeEach ->
@@ -31,6 +35,9 @@ describe "VIFCollection", ->
     it "should throw unless VIF is provided", ->
       expect(-> new VIFCollection session).to.throw /Must provide VIF/
 
+    it "should throw unless XenAPI is provided", ->
+      expect(-> new VIFCollection session, VIF).to.throw /Must provide xenAPI/
+
   describe "list()", (done) ->
     requestStub = undefined
     vifCollection = undefined
@@ -40,7 +47,7 @@ describe "VIFCollection", ->
         new Promise (resolve, reject) ->
           resolve([])
 
-      vifCollection = new VIFCollection session, VIF
+      vifCollection = new VIFCollection session, VIF, XenAPI
 
     afterEach ->
       requestStub.restore()

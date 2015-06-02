@@ -11,6 +11,7 @@ chai.use chaiAsPromised
 describe "VM", ->
 	session = undefined
 	VM = undefined
+	XenAPI = undefined
 
 	beforeEach ->
 		session =
@@ -18,16 +19,19 @@ describe "VM", ->
 
 		VM = require '../../lib/Models/VM'
 
+		XenAPI =
+			'session': session
+
 	describe "constructor", ->
 		validVM = undefined
-		key = undefined
+		opaqueRef = undefined
 
 		beforeEach ->
 			validVM = 
 				uuid: 'abcd'
 				is_a_template: false
 				is_control_domain: false
-			key = 'OpaqueRef:abcd'
+			opaqueRef = 'OpaqueRef:abcd'
 
 		afterEach ->
 
@@ -37,23 +41,26 @@ describe "VM", ->
 		it "should throw unless vm is provided", ->
 			expect(-> new VM session).to.throw /Must provide `vm`/
 
+		it "should throw unless opaqueRef is provided", ->
+			expect(-> new VM session, validVM).to.throw /Must provide `opaqueRef`/
+
+		it "should throw unless XenAPI is provided", ->
+			expect(-> new VM session, validVM, "OpaqueRef").to.throw /Must provide `xenAPI`/
+
 		it "should throw if vm does not have a UUID", ->
-			expect(-> new VM session, { is_a_template: false, is_control_domain: false }).to.throw /`vm` does not describe a valid VM/
+			expect(-> new VM session, { is_a_template: false, is_control_domain: false }, opaqueRef, XenAPI).to.throw /`vm` does not describe a valid VM/
 
 		it "should throw if vm is a template", ->
-			expect(-> new VM session, { uuid: 'abcd', is_a_template: true, is_control_domain: false }).to.throw /`vm` does not describe a valid VM/
+			expect(-> new VM session, { uuid: 'abcd', is_a_template: true, is_control_domain: false }, opaqueRef, XenAPI).to.throw /`vm` does not describe a valid VM/
 
 		it "should throw if vm is a control domain", ->
-			expect(-> new VM session, { uuid: 'abcd', is_a_template: false, is_control_domain: true }).to.throw /`vm` does not describe a valid VM/
-
-		it "should throw unless key is provided", ->
-			expect(-> new VM session, validVM).to.throw /Must provide `key`/
+			expect(-> new VM session, { uuid: 'abcd', is_a_template: false, is_control_domain: true }, opaqueRef, XenAPI).to.throw /`vm` does not describe a valid VM/
 
 		it "should assign the passed uuid to `uuid` property", ->
 			vmTemplate = validVM
 
 			vmTemplate.uuid = 'abcd'
-			vm = new VM session, vmTemplate, key
+			vm = new VM session, vmTemplate, opaqueRef, XenAPI
 
 			expect(vm.uuid).to.equal(vmTemplate.uuid)
 
@@ -61,7 +68,7 @@ describe "VM", ->
 			vmTemplate = validVM
 
 			vmTemplate.name_label = 'abcd'
-			vm = new VM session, vmTemplate, key
+			vm = new VM session, vmTemplate, opaqueRef, XenAPI
 
 			expect(vm.name).to.equal(vmTemplate.name_label)
 
@@ -69,7 +76,7 @@ describe "VM", ->
 			vmTemplate = validVM
 
 			vmTemplate.name_description = 'abcd'
-			vm = new VM session, vmTemplate, key
+			vm = new VM session, vmTemplate, opaqueRef, XenAPI
 
 			expect(vm.description).to.equal(vmTemplate.name_description)
 
@@ -77,12 +84,12 @@ describe "VM", ->
 			vmTemplate = validVM
 
 			vmTemplate.guest_metrics = 'OpaqueRef:NULL'
-			vm = new VM session, vmTemplate, key
+			vm = new VM session, vmTemplate, opaqueRef, XenAPI
 
 			expect(vm.xenToolsInstalled).to.equal(false)
 
 			vmTemplate.guest_metrics = 'OpaqueRef:abcd'
-			vm = new VM session, vmTemplate, key
+			vm = new VM session, vmTemplate, opaqueRef, XenAPI
 
 			expect(vm.xenToolsInstalled).to.equal(true)
 
@@ -90,12 +97,12 @@ describe "VM", ->
 			vmTemplate = validVM
 
 			vmTemplate.power_state = 'abcd'
-			vm = new VM session, vmTemplate, key
+			vm = new VM session, vmTemplate, opaqueRef, XenAPI
 
 			expect(vm.powerState).to.equal(vmTemplate.power_state)
 
 	describe "refreshPowerState()", ->
-		key = undefined
+		opaqueRef = undefined
 		vm = undefined
 		requestStub = undefined
 
@@ -104,9 +111,9 @@ describe "VM", ->
 				uuid: 'abcd'
 				is_a_template: false
 				is_control_domain: false
-			key = 'OpaqueRef:abcd'
+			opaqueRef = 'OpaqueRef:abcd'
 
-			vm = new VM session, validVM, key
+			vm = new VM session, validVM, opaqueRef, XenAPI
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
 					resolve()
@@ -122,7 +129,7 @@ describe "VM", ->
 
 		it "should pass the OpaqueRef of the VM to the API", (done) ->
 			vm.refreshPowerState().then ->
-				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [opaqueRef]
 				done()
 			.catch (e) ->
 				done e
@@ -167,7 +174,7 @@ describe "VM", ->
 				done e
 
 	describe "pause()", ->
-		key = undefined
+		opaqueRef = undefined
 		vm = undefined
 		requestStub = undefined
 		refreshPowerStateStub = undefined
@@ -177,9 +184,9 @@ describe "VM", ->
 				uuid: 'abcd'
 				is_a_template: false
 				is_control_domain: false
-			key = 'OpaqueRef:abcd'
+			opaqueRef = 'OpaqueRef:abcd'
 
-			vm = new VM session, validVM, key
+			vm = new VM session, validVM, opaqueRef, XenAPI
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
 					resolve()
@@ -242,13 +249,13 @@ describe "VM", ->
 
 		it "should pass OpaqueRef for the VM to the API", (done) ->
 			vm.pause().then ->
-				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [opaqueRef]
 				done()
 			.catch (e) ->
 				done e
 
 	describe "unpause()", ->
-		key = undefined
+		opaqueRef = undefined
 		vm = undefined
 		requestStub = undefined
 		refreshPowerStateStub = undefined
@@ -258,9 +265,9 @@ describe "VM", ->
 				uuid: 'abcd'
 				is_a_template: false
 				is_control_domain: false
-			key = 'OpaqueRef:abcd'
+			opaqueRef = 'OpaqueRef:abcd'
 
-			vm = new VM session, validVM, key
+			vm = new VM session, validVM, opaqueRef, XenAPI
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
 					resolve()
@@ -323,13 +330,13 @@ describe "VM", ->
 
 		it "should pass OpaqueRef for the VM to the API", (done) ->
 			vm.unpause().then ->
-				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [opaqueRef]
 				done()
 			.catch (e) ->
 				done e
 
 	describe "suspend()", ->
-		key = undefined
+		opaqueRef = undefined
 		vm = undefined
 		requestStub = undefined
 		refreshPowerStateStub = undefined
@@ -339,9 +346,9 @@ describe "VM", ->
 				uuid: 'abcd'
 				is_a_template: false
 				is_control_domain: false
-			key = 'OpaqueRef:abcd'
+			opaqueRef = 'OpaqueRef:abcd'
 
-			vm = new VM session, validVM, key
+			vm = new VM session, validVM, opaqueRef, XenAPI
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
 					resolve()
@@ -404,13 +411,13 @@ describe "VM", ->
 
 		it "should pass OpaqueRef for the VM to the API", (done) ->
 			vm.suspend().then ->
-				expect(requestStub).to.have.been.calledWith sinon.match.any, [key]
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [opaqueRef]
 				done()
 			.catch (e) ->
 				done e
 
 	describe "resume()", ->
-		key = undefined
+		opaqueRef = undefined
 		vm = undefined
 		requestStub = undefined
 		refreshPowerStateStub = undefined
@@ -420,9 +427,9 @@ describe "VM", ->
 				uuid: 'abcd'
 				is_a_template: false
 				is_control_domain: false
-			key = 'OpaqueRef:abcd'
+			opaqueRef = 'OpaqueRef:abcd'
 
-			vm = new VM session, validVM, key
+			vm = new VM session, validVM, opaqueRef, XenAPI
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
 					resolve()
@@ -485,7 +492,7 @@ describe "VM", ->
 
 		it "should pass OpaqueRef for the VM to the API", (done) ->
 			vm.resume().then ->
-				expect(requestStub).to.have.been.calledWith sinon.match.any, [key, sinon.match.any, sinon.match.any]
+				expect(requestStub).to.have.been.calledWith sinon.match.any, [opaqueRef, sinon.match.any, sinon.match.any]
 				done()
 			.catch (e) ->
 				done e

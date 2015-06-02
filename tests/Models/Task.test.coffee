@@ -11,6 +11,7 @@ chai.use chaiAsPromised
 describe "Task", ->
 	session = undefined
 	Task = undefined
+	XenAPI = undefined
 	requestStub = undefined
 
 	beforeEach ->
@@ -23,6 +24,9 @@ describe "Task", ->
 
 		Task = require '../../lib/Models/Task'
 
+		XenAPI =
+			'session': session
+
 	describe "constructor", ->
 		beforeEach ->
 
@@ -34,20 +38,26 @@ describe "Task", ->
 		it "should throw unless JSON task is provided", ->
 			expect(-> new Task session).to.throw /Must provide `task`/
 
-		it "should throw unless OpaqueRef key is provided", ->
-			expect(-> new Task session, {}).to.throw /Must provide `key`/
+		it "should throw unless OpaqueRef is provided", ->
+			expect(-> new Task session, {}).to.throw /Must provide `opaqueRef`/
+
+		it "should throw unless XenAPI is provided", ->
+			validTask =
+				allowed_operations: []
+				status: "success"
+			expect(-> new Task session, validTask, "OpaqueRef").to.throw /Must provide `xenAPI`/
 
 		it "should throw if a JSON task does not provide a valid representation of Task", ->
 			invalidTask = {}
 
-			expect(-> new Task session, invalidTask, "OpaqueRef").to.throw /`task` does not describe a valid Task/
+			expect(-> new Task session, invalidTask, "OpaqueRef", XenAPI).to.throw /`task` does not describe a valid Task/
 
 		it "should not throw if a JSON task provides a valid representation of Task", ->
 			validTask =
 				allowed_operations: []
 				status: "success"
 
-			expect(-> new Task session, validTask, "OpaqueRef").not.to.throw()
+			expect(-> new Task session, validTask, "OpaqueRef", XenAPI).not.to.throw()
 
 		it "should assign the `uuid` property from the JSON representation to itself", ->
 			validTask =
@@ -55,7 +65,7 @@ describe "Task", ->
 				status: "success"
 				uuid: "abcd1234"
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.uuid).to.equal validTask.uuid
 
@@ -65,7 +75,7 @@ describe "Task", ->
 				status: "success"
 				name_label: "abcd1234"
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.name).to.equal validTask.name_label
 
@@ -76,7 +86,7 @@ describe "Task", ->
 				status: "success"
 				name_description: "abcd1234"
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.description).to.equal validTask.name_description
 
@@ -85,7 +95,7 @@ describe "Task", ->
 				allowed_operations: []
 				status: "success"
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.allowed_operations).to.deep.equal validTask.allowed_operations
 
@@ -94,7 +104,7 @@ describe "Task", ->
 				allowed_operations: []
 				status: "success"
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.status).to.equal validTask.status
 
@@ -104,7 +114,7 @@ describe "Task", ->
 				status: "success"
 				created: new Date()
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.created).to.equal validTask.created
 
@@ -114,7 +124,7 @@ describe "Task", ->
 				status: "success"
 				finished: new Date()
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.finished).to.equal validTask.finished
 
@@ -124,7 +134,7 @@ describe "Task", ->
 				status: "success"
 				progress: 0
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.progress).to.equal validTask.progress
 
@@ -137,7 +147,7 @@ describe "Task", ->
 				allowed_operations: ["cancel"]
 				status: "success"
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 		afterEach ->
 
@@ -149,7 +159,7 @@ describe "Task", ->
 				allowed_operations: []
 				status: "success"
 
-			task = new Task session, validTask, "OpaqueRef"
+			task = new Task session, validTask, "OpaqueRef", XenAPI
 
 			expect(task.cancel()).to.eventually.be.rejectedWith(/Operation is not allowed/).and.notify done
 
@@ -162,10 +172,10 @@ describe "Task", ->
 
 		it "should call `task.cancel` with the OpaqueRef of the Task", (done) ->
 			opaqueRef = "abcd1234"
-			task = new Task session, validTask, opaqueRef
+			task = new Task session, validTask, opaqueRef, XenAPI
 
 			task.cancel().then ->
-				expect(requestStub).to.have.been.calledWith "task.cancel", opaqueRef
+				expect(requestStub).to.have.been.calledWith "task.cancel", [opaqueRef]
 				done()
 			.catch (e) ->
 				done e

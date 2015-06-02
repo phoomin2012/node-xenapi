@@ -11,12 +11,16 @@ chai.use chaiAsPromised
 describe "VIF", ->
   session = undefined
   VIF = undefined
+  XenAPI = undefined
 
   beforeEach ->
     session =
       request: ->
 
     VIF = require '../../lib/Models/VIF'
+
+    XenAPI =
+      'session': session
 
   describe "constructor", ->
     key = undefined
@@ -32,5 +36,8 @@ describe "VIF", ->
     it "should throw unless vif is provided", ->
       expect(-> new VIF session).to.throw /Must provide `vif`/
 
-    it "should throw unless key is provided", ->
-      expect(-> new VIF session, {}).to.throw /Must provide `key`/
+    it "should throw unless opaqueRef is provided", ->
+      expect(-> new VIF session, {}).to.throw /Must provide `opaqueRef`/
+
+    it "should throw unless xenAPI is provided", ->
+      expect(-> new VIF session, {}, "OpaqueRef").to.throw /Must provide `xenAPI`/

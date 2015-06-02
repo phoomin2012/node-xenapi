@@ -12,6 +12,7 @@ describe "VMCollection", ->
 	session = undefined
 	VMCollection = undefined
 	VM = undefined
+	XenAPI = undefined
 
 	beforeEach ->
 		session =
@@ -19,6 +20,9 @@ describe "VMCollection", ->
 
 		VMCollection = require '../lib/VMCollection'
 		VM = require '../lib/Models/VM'
+
+		XenAPI =
+			'session': session
 
 	describe "constructor", ->
 		beforeEach ->
@@ -31,6 +35,9 @@ describe "VMCollection", ->
 		it "should throw unless VM is provided", ->
 			expect(-> new VMCollection session).to.throw /Must provide VM/
 
+		it "should throw unless xenAPI is provided", ->
+			expect(-> new VMCollection session, VM).to.throw /Must provide xenAPI/
+
 	describe "list()", (done) ->
 		requestStub = undefined
 		vmCollection = undefined
@@ -40,7 +47,7 @@ describe "VMCollection", ->
 				new Promise (resolve, reject) ->
 					resolve([])
 
-			vmCollection = new VMCollection session, VM
+			vmCollection = new VMCollection session, VM, XenAPI
 
 		afterEach ->
 			requestStub.restore()
@@ -88,7 +95,7 @@ describe "VMCollection", ->
 			requestStub.restore()
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
-					resolve([{ is_a_template: true }])
+					resolve({ "OpaqueRef": { is_a_template: true }})
 
 			vmCollection.list().then (vms) ->
 				expect(vms).to.deep.equal([])
@@ -100,7 +107,7 @@ describe "VMCollection", ->
 			requestStub.restore()
 			requestStub = sinon.stub session, "request", ->
 				new Promise (resolve, reject) ->
-					resolve([{ is_control_domain: true }])
+					resolve({ "OpaqueRef": { is_control_domain: true }})
 
 			vmCollection.list().then (vms) ->
 				expect(vms).to.deep.equal([])
