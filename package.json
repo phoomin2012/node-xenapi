@@ -1,5 +1,5 @@
 {
-  "name": "node-xenapi",
+  "name": "xenapi",
   "version": "0.0.1",
   "description": "XenAPI bindings in Node.js",
   "main": "lib/index.js",
