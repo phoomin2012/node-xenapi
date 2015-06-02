@@ -40,4 +40,13 @@ class SR
     @physical_size = _sr.physical_size
     @unused_space = _sr.physical_size - _sr.physical_utilisation
 
+  scan: =>
+    debug "scan()"
+    new Promise (resolve, reject) =>
+      session.request("SR.scan", [@opaqueRef]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = SR
