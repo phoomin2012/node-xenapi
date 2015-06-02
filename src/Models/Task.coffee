@@ -22,8 +22,8 @@ class Task
       throw Error "Must provide `session`"
     unless _task
       throw Error "Must provide `task`"
-    unless _key
-      throw Error "Must provide `key`"
+    unless _opaqueRef
+      throw Error "Must provide `opaqueRef`"
     unless _xenAPI
       throw Error "Must provide `xenAPI`"
 
