@@ -5,7 +5,7 @@ Usage
 ====
 
 ```
-var xenapi = require("xenapi")({
+var xenapi = require("xenapi2")({
 	host: "xen-server",
 	port: "80"
 });
