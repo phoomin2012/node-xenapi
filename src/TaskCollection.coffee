@@ -9,7 +9,10 @@ class TaskCollection
   xenAPI = undefined
 
   createTaskInstance = (task, opaqueRef) =>
-    return new Task session, task, opaqueRef, xenAPI
+    try
+      return new Task session, task, opaqueRef, xenAPI
+    catch
+      return null
 
   ###*
   * Construct TaskCollection
