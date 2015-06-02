@@ -53,4 +53,18 @@ class NetworkCollection
         debug e
         reject e
 
+  findNamed: (name) =>
+    debug "findNamed(#{name})"
+    new Promise (resolve, reject) =>
+      @list().then (networks) =>
+        matchNetworkName = (network) ->
+          if minimatch(network.name, name, {nocase: true})
+            return network
+
+        matches = _.map networks, matchNetworkName
+        resolve _.filter matches, (network) -> network
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = NetworkCollection
