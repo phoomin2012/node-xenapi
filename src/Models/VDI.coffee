@@ -35,4 +35,15 @@ class VDI
     @allowed_operations = _vdi.allowed_operations
     @SR = _vdi.SR
 
+  copy: (targetSR) =>
+    debug "copy(#{targetSR.uuid})"
+    new Promise (resolve, reject) =>
+      session.request("VDI.copy", [@.opaqueRef, targetSR.opaqueRef]).then (value) =>
+        debug value
+        xenAPI.vdiCollection.findOpaqueRef(value).then (vdi) =>
+          resolve(vdi)
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VDI
