@@ -65,6 +65,20 @@ class SRCollection
         debug e
         reject e
 
+  findUUID: (uuid) =>
+    debug "findUUID(#{uuid}"
+    new Promise (resolve, reject) =>
+      @list().then (SRs) =>
+        matchSRuuid = (sr) ->
+          if sr.uuid == uuid
+            return sr
+
+        matches = _.map SRs, matchSRuuid
+        resolve _.filter matches, (sr) -> sr
+      .catch (e) ->
+        debug e
+        reject e
+
   findOpaqueRef: (opaqueRef) =>
     debug "findOpaqueRef(#{opaqueRef})"
     new Promise (resolve, reject) =>
