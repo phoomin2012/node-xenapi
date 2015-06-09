@@ -68,4 +68,31 @@ class VDICollection
       debug e
       reject e
 
+  findUUID: (uuid) =>
+    debug "findUUID(#{uuid}"
+    new Promise (resolve, reject) =>
+      @list().then (VDIs) =>
+        matchVDIuuid = (vdi) ->
+          if vdi.uuid == uuid
+            return vdi
+
+        matches = _.map VDIs, matchVDIuuid
+        resolve _.filter matches, (vdi) -> vdi
+      .catch (e) ->
+        debug e
+        reject e
+
+  findOpaqueRef: (opaqueRef) =>
+    debug "findOpaqueRef(#{opaqueRef})"
+    new Promise (resolve, reject) =>
+      session.request("VDI.get_record", [opaqueRef]).then (value) =>
+        unless value
+          reject()
+
+        vdi = createVDIInstance value, opaqueRef
+        resolve vdi
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VDICollection
