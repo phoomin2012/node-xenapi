@@ -51,7 +51,7 @@ class VBDCollection
         debug e
         reject e
 
-  create: (vm, mode, type, vdi) =>
+  create: (vm, mode, type, vdi, userdevice) =>
     debug "create()"
 
     new Promise (resolve, reject) =>
@@ -64,7 +64,7 @@ class VBDCollection
       vbd =
         VM: vm.opaqueRef,
         VDI: vdiRef,
-        userdevice: "0",
+        userdevice: userdevice,
         mode: mode,
         type: type,
         empty: empty
