@@ -51,14 +51,16 @@ class VIFCollection
         debug e
         reject e
 
-  create: (network, vm) =>
+  create: (network, vm, mac) =>
     debug "create()"
 
     new Promise (resolve, reject) =>
+      unless mac
+        mac = ""
       vif =
         uuid: null,
         device: vm.VIFs.length.toString(),
-        MAC: "",
+        MAC: mac,
         MTU: "1500",
         currently_attached: false,
         network: network.opaqueRef,
