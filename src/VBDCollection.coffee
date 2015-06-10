@@ -51,16 +51,20 @@ class VBDCollection
         debug e
         reject e
 
-  create: (vm) =>
+  create: (vm, mode, type, vdi) =>
     debug "create()"
 
     new Promise (resolve, reject) =>
+      unless vdi
+        vdiRef = "OpaqueRef:NULL"
+      else
+        vdiRef = vdi.opaqueRef
       vbd =
         VM: vm.opaqueRef,
-        VDI: "OpaqueRef:NULL",
-        userdevice: "3",
-        mode: VBD.MODES.RO,
-        type: VBD.TYPES.CD,
+        VDI: vdiRef,
+        userdevice: "0",
+        mode: mode,
+        type: type,
         empty: true
 
       newVBD = new VBD session, vbd, "OpaqueRef:NULL", xenAPI
