@@ -57,15 +57,17 @@ class VBDCollection
     new Promise (resolve, reject) =>
       unless vdi
         vdiRef = "OpaqueRef:NULL"
+        empty = true
       else
         vdiRef = vdi.opaqueRef
+        empty = false
       vbd =
         VM: vm.opaqueRef,
         VDI: vdiRef,
         userdevice: "0",
         mode: mode,
         type: type,
-        empty: true
+        empty: empty
 
       newVBD = new VBD session, vbd, "OpaqueRef:NULL", xenAPI
 
