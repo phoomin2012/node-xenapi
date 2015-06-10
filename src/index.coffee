@@ -48,4 +48,14 @@ module.exports = (options) ->
   xenAPI.vifCollection = vifCollection
   xenAPI.vmCollection = vmCollection
 
+  xenAPI.models =
+    Network: Network,
+    Pool: Pool,
+    SR: SR,
+    Task: Task,
+    VBD: VBD,
+    VDI: VDI,
+    VIF: VIF,
+    VM: VM
+
   return xenAPI
