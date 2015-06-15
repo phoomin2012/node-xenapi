@@ -150,6 +150,23 @@ class VM
         debug e
         reject e
 
+  cleanReboot: =>
+    debug "cleanReboot()"
+    new Promise (resolve, reject) =>
+      @refreshPowerState().then (currentPowerState) =>
+        unless currentPowerState == VM.POWER_STATES.RUNNING
+          reject "VM not in #{VM.POWER_STATES.RUNNING} power state."
+        else
+          session.request("VM.clean_reboot", [@opaqueRef]).then (value) =>
+            resolve()
+          .catch (e) ->
+            debug e
+            reject e
+      .catch (e) ->
+        debug e
+        reject e
+
+
   VM.POWER_STATES =
     HALTED: 'Halted',
     PAUSED: 'Paused',
