@@ -1,4 +1,6 @@
 APIClient = require './APIClient'
+GuestMetricsCollection = require './GuestMetricsCollection'
+GuestMetrics = require './Models/GuestMetrics'
 NetworkCollection = require './NetworkCollection'
 Network = require './Models/Network'
 PoolCollection = require './PoolCollection'
@@ -28,6 +30,7 @@ module.exports = (options) ->
     session: session
   }
 
+  guestMetricsCollection = new GuestMetricsCollection session, GuestMetrics, xenAPI
   networkCollection = new NetworkCollection session, Network, xenAPI
   poolCollection = new PoolCollection session, Pool, xenAPI
   srCollection = new SRCollection session, SR, xenAPI
@@ -38,6 +41,7 @@ module.exports = (options) ->
   vifCollection = new VIFCollection session, VIF, xenAPI
   vmCollection = new VMCollection session, VM, xenAPI
 
+  xenAPI.guestMetricsCollection = guestMetricsCollection
   xenAPI.networkCollection = networkCollection
   xenAPI.poolCollection = poolCollection
   xenAPI.srCollection = srCollection
@@ -49,6 +53,7 @@ module.exports = (options) ->
   xenAPI.vmCollection = vmCollection
 
   xenAPI.models =
+    GuestMetrics: GuestMetrics,
     Network: Network,
     Pool: Pool,
     SR: SR,

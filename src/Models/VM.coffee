@@ -40,6 +40,7 @@ class VM
     @xenToolsInstalled = !(_vm.guest_metrics == 'OpaqueRef:NULL')
     @powerState = _vm.power_state
     @VIFs = _vm.VIFs
+    @guest_metrics = _vm.guest_metrics
 
   ###*
    * Refresh the power state of this VM
