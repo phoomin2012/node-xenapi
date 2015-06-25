@@ -37,6 +37,7 @@ class Template
     @name = _template.name_label
     @description = _template.name_description
     @VIFs = _template.VIFs || []
+    @VBDs = _template.VBDs || []
     @other_config = _template.other_config
 
   toJSON: =>

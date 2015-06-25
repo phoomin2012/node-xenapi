@@ -39,7 +39,8 @@ class VM
     @other_config = _vm.other_config
     @xenToolsInstalled = !(_vm.guest_metrics == 'OpaqueRef:NULL')
     @powerState = _vm.power_state
-    @VIFs = _vm.VIFs
+    @VIFs = _vm.VIFs || []
+    @VBDs = _template.VBDs || []
     @guest_metrics = _vm.guest_metrics
 
   ###*

@@ -86,4 +86,20 @@ class VBDCollection
         debug e
         reject e
 
+  findForVM: (vm) =>
+    debug "findForVM()"
+    new Promise (resolve, reject) =>
+      query = 'field "VM"="' + vm.opaqueRef + '"'
+      session.request("VBD.get_all_records_where", [query]).then (value) =>
+        unless value
+          reject()
+
+        debug "Received #{Object.keys(value).length} records"
+
+        VBDs = _.map value, createVBDInstance
+        resolve _.filter VBDs, (vbd) -> vbd
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VBDCollection
