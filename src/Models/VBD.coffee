@@ -72,6 +72,15 @@ class VBD
         debug e
         reject e
 
+  getVDI: =>
+    debug "getVDI()"
+    new Promise (resolve, reject) =>
+      xenAPI.vdiCollection.findOpaqueRef(@VDI).then (vdi) ->
+        resolve(vdi)
+      .catch (e) ->
+        debug e
+        reject e
+
   VBD.MODES =
     RO: "RO",
     RW: "RW"
