@@ -66,6 +66,24 @@ class TemplateCollection
         debug e
         reject e
 
+  findUUID: (uuid) =>
+    debug "findUUID(#{uuid}"
+    new Promise (resolve, reject) =>
+      @list().then (Templates) =>
+        matchTemplateUUID = (template) ->
+          if template.uuid == uuid
+            return template
+
+        matches = _.map Templates, matchTemplateUUID
+        filtered = _.filter matches, (template) -> template
+        if filtered.length > 1
+          reject("Multiple Templates for UUID #{uuid}")
+        else
+          resolve filtered[0]
+      .catch (e) ->
+        debug e
+        reject e
+
   findOpaqueRef: (opaqueRef) =>
     debug "findOpaqueRef(#{opaqueRef})"
     new Promise (resolve, reject) =>
