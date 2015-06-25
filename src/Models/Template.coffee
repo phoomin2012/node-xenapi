@@ -1,5 +1,6 @@
 debug = require('debug') 'XenAPI:Template'
 Promise = require 'bluebird'
+_ = require 'lodash'
 
 class Template
   session = undefined
@@ -89,5 +90,21 @@ class Template
       .catch (e) ->
         debug e
         reject e
+
+  getVBDs: =>
+    debug "getVBDs()"
+    new Promise (resolve, reject) =>
+      vbdSearchPromises = []
+      _.each @VBDs, (vbd) ->
+        vbdSearchPromise = xenAPI.vbdCollection.findOpaqueRef(vbd)
+        vbdSearchPromises.push vbdSearchPromise
+
+      Promise.all(vbdSearchPromises).then (vbdObjects) ->
+        debug vbdObjects
+        resolve(vbdObjects)
+      .catch (e) ->
+        debug e
+        reject e
+
 
 module.exports = Template

@@ -1,5 +1,6 @@
 debug = require('debug') 'XenAPI:VM'
 Promise = require 'bluebird'
+_ = require 'lodash'
 
 class VM
   session = undefined
@@ -183,6 +184,20 @@ class VM
         debug e
         reject e
 
+  getVBDs: =>
+    debug "getVBDs()"
+    new Promise (resolve, reject) =>
+      vbdSearchPromises = []
+      _.each @VBDs, (vbd) ->
+        vbdSearchPromise = xenAPI.vbdCollection.findOpaqueRef(vbd)
+        vbdSearchPromises.push vbdSearchPromise
+
+      Promise.all(vbdSearchPromises).then (vbdObjects) ->
+        debug vbdObjects
+        resolve(vbdObjects)
+      .catch (e) ->
+        debug e
+        reject e
 
   VM.POWER_STATES =
     HALTED: 'Halted',
