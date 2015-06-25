@@ -40,7 +40,7 @@ class VM
     @xenToolsInstalled = !(_vm.guest_metrics == 'OpaqueRef:NULL')
     @powerState = _vm.power_state
     @VIFs = _vm.VIFs || []
-    @VBDs = _template.VBDs || []
+    @VBDs = _vm.VBDs || []
     @guest_metrics = _vm.guest_metrics
 
   ###*

@@ -11,7 +11,9 @@ class VMCollection
   createVMInstance = (vm, opaqueRef) =>
     try
       return new VM session, vm, opaqueRef, xenAPI
-    catch
+    catch e
+      debug "caught error"
+      debug e
       return null
 
   ###*
