@@ -74,7 +74,11 @@ class SRCollection
             return sr
 
         matches = _.map SRs, matchSRuuid
-        resolve _.filter matches, (sr) -> sr
+        filtered _.filter matches, (sr) -> sr
+        if filtered.length > 1
+          reject("Multiple SRs for UUID #{uuid}")
+        else
+          resolve filtered[0]
       .catch (e) ->
         debug e
         reject e

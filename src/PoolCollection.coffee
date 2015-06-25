@@ -51,4 +51,22 @@ class PoolCollection
         debug e
         reject e
 
+  findUUID: (uuid) =>
+    debug "findUUID(#{uuid}"
+    new Promise (resolve, reject) =>
+      @list().then (Pools) =>
+        matchPooluuid = (pool) ->
+          if pool.uuid == uuid
+            return pool
+
+        matches = _.map Pools, matchPooluuid
+        filtered _.filter matches, (pool) -> pool
+        if filtered.length > 1
+          reject("Multiple Pools for UUID #{uuid}")
+        else
+          resolve filtered[0]
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = PoolCollection

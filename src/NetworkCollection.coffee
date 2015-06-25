@@ -67,4 +67,22 @@ class NetworkCollection
         debug e
         reject e
 
+  findUUID: (uuid) =>
+    debug "findUUID(#{uuid}"
+    new Promise (resolve, reject) =>
+      @list().then (Networks) =>
+        matchNetworkUuid = (network) ->
+          if network.uuid == uuid
+            return network
+
+        matches = _.map Networks, matchNetworkUuid
+        filtered _.filter matches, (network) -> network
+        if filtered.length > 1
+          reject("Multiple Networks for UUID #{uuid}")
+        else
+          resolve filtered[0]
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = NetworkCollection
