@@ -39,6 +39,10 @@ class Template
     @VIFs = _template.VIFs || []
     @VBDs = _template.VBDs || []
     @other_config = _template.other_config
+    #We imply the minimum RAM from the maximum RAM the template supports. XenCenter does this.
+    @ram_minimum = _template.memory_static_max
+    #Same with CPU count.
+    @vcpu_minimum = _template.VCPUs_max
 
   toJSON: =>
     {
