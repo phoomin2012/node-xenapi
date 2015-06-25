@@ -76,7 +76,7 @@ class NetworkCollection
             return network
 
         matches = _.map Networks, matchNetworkUuid
-        filtered _.filter matches, (network) -> network
+        filtered = _.filter matches, (network) -> network
         if filtered.length > 1
           reject("Multiple Networks for UUID #{uuid}")
         else

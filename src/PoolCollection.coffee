@@ -60,7 +60,7 @@ class PoolCollection
             return pool
 
         matches = _.map Pools, matchPooluuid
-        filtered _.filter matches, (pool) -> pool
+        filtered = _.filter matches, (pool) -> pool
         if filtered.length > 1
           reject("Multiple Pools for UUID #{uuid}")
         else
