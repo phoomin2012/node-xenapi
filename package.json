@@ -1,6 +1,6 @@
 {
   "name": "xenapi2",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "XenAPI bindings in Node.js",
   "main": "lib/index.js",
   "directories": {
