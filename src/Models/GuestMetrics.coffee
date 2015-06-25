@@ -34,5 +34,6 @@ class GuestMetrics
     @os_version = _guestmetrics.os_version
     @memory = _guestmetrics.memory
     @disks = _guestmetrics.disks
+    @last_updated = _guestmetrics.last_updated
 
 module.exports = GuestMetrics
