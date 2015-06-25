@@ -33,6 +33,7 @@ class VDI
     @name = _vdi.name_label
     @description = _vdi.name_description
     @allowed_operations = _vdi.allowed_operations
+    @virtual_size = _vdi.virtual_size
     @SR = _vdi.SR
 
   copy: (targetSR) =>
