@@ -40,7 +40,8 @@ class TemplateCollection
   list: =>
     debug "list()"
     new Promise (resolve, reject) =>
-      session.request("VM.get_all_records").then (value) =>
+      query = 'field "is_a_template" = "true"'
+      session.request("VM.get_all_records_where", [query]).then (value) =>
         unless value
           reject()
         debug "Received #{Object.keys(value).length} records"
