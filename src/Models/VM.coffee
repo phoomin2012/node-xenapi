@@ -219,6 +219,24 @@ class VM
         debug e
         reject e
 
+  setMemoryDynamicMax: (max) =>
+    debug "setMemoryDynamicMax(#{max})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_memory_dynamic_max", [@opaqueRef, max]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
+  setMemoryDynamicMin: (min) =>
+    debug "setMemoryDynamicMin(#{min})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_memory_dynamic_min", [@opaqueRef, min]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
   setStartupCPUs: (count) =>
     debug "setStartupCPUs(#{count})"
     new Promise (resolve, reject) =>
