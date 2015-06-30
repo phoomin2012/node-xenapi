@@ -43,6 +43,8 @@ class VM
     @VIFs = _vm.VIFs || []
     @VBDs = _vm.VBDs || []
     @guest_metrics = _vm.guest_metrics
+    @ram = _vm.memory_static_max
+    @vcpu = _vm.VCPUs_max
 
   ###*
    * Refresh the power state of this VM
@@ -195,6 +197,33 @@ class VM
       Promise.all(vbdSearchPromises).then (vbdObjects) ->
         debug vbdObjects
         resolve(vbdObjects)
+      .catch (e) ->
+        debug e
+        reject e
+
+  setMemoryStaticMax: (max) =>
+    debug "setMemoryStaticMax(#{max})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_memory_static_max", [@opaqueRef, max]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
+  setMemoryStaticMin: (min) =>
+    debug "setMemoryStaticMin(#{min})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_memory_static_min", [@opaqueRef, min]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
+  setStartupCPUs: (count) =>
+    debug "setVCPUMax(#{count})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_VCPUs_at_startup", [@opaqueRef, count]).then (value) =>
+        resolve()
       .catch (e) ->
         debug e
         reject e

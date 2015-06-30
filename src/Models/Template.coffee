@@ -106,5 +106,32 @@ class Template
         debug e
         reject e
 
+  setMemoryStaticMax: (max) =>
+    debug "setMemoryStaticMax(#{max})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_memory_static_max", [@opaqueRef, max]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
+  setMemoryStaticMin: (min) =>
+    debug "setMemoryStaticMin(#{min})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_memory_static_min", [@opaqueRef, min]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
+  setStartupCPUs: (count) =>
+    debug "setVCPUMax(#{count})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_VCPUs_at_startup", [@opaqueRef, count]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
 
 module.exports = Template
