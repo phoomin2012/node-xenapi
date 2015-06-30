@@ -46,6 +46,21 @@ class VM
     @ram = _vm.memory_static_max
     @vcpu = _vm.VCPUs_max
 
+  destroy: =>
+    debug "destroy()"
+    new Promise (resolve, reject) =>
+      @refreshPowerState().then (currentPowerState) =>
+        unless currentPowerState == VM.POWER_STATES.HALTED
+          reject "VM not in #{VM.POWER_STATES.HALTED} power state."
+        else
+          session.request("VM.destroy", [@opaqueRef]).then (value) =>
+            resolve()
+          .catch (e) ->
+            debug e
+            reject e
+      .catch (e) ->
+        debug e
+        reject e
   ###*
    * Refresh the power state of this VM
    * @return     {Promise}

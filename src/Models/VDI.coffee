@@ -36,6 +36,16 @@ class VDI
     @virtual_size = _vdi.virtual_size
     @SR = _vdi.SR
 
+  destroy: =>
+    debug "destroy()"
+    new Promise (resolve, reject) =>
+      session.request("VDI.destroy", [@opaqueRef]).then (value) =>
+        debug value
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
   copy: (targetSR) =>
     debug "copy(#{targetSR.uuid})"
     new Promise (resolve, reject) =>
