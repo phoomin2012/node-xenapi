@@ -220,9 +220,18 @@ class VM
         reject e
 
   setStartupCPUs: (count) =>
-    debug "setVCPUMax(#{count})"
+    debug "setStartupCPUs(#{count})"
     new Promise (resolve, reject) =>
       session.request("VM.set_VCPUs_at_startup", [@opaqueRef, count]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
+  setVCPUMax: (count) =>
+    debug "setVCPUMax(#{count})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_VCPUs_max", [@opaqueRef, count]).then (value) =>
         resolve()
       .catch (e) ->
         debug e
