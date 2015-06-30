@@ -52,13 +52,6 @@ describe "VMCollection", ->
 		afterEach ->
 			requestStub.restore()
 
-		it "should call `VM.get_all_records` on the API", (done) ->
-			vmCollection.list().then ->
-				expect(requestStub).to.have.been.calledWith "VM.get_all_records"
-				done()
-			.catch (e) ->
-				done e
-
 		it "should resolve if the API call is successful", (done) ->
 			promise = vmCollection.list()
 
