@@ -68,14 +68,6 @@
       afterEach(function() {
         return requestStub.restore();
       });
-      it("should call `VM.get_all_records` on the API", function(done) {
-        return vmCollection.list().then(function() {
-          expect(requestStub).to.have.been.calledWith("VM.get_all_records");
-          return done();
-        })["catch"](function(e) {
-          return done(e);
-        });
-      });
       it("should resolve if the API call is successful", function(done) {
         var promise;
         promise = vmCollection.list();
