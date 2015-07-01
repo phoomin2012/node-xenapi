@@ -270,6 +270,16 @@ class VM
         debug e
         reject e
 
+  convertToTemplate: =>
+    debug "convertToTemplate()"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_is_a_template", [@opaqueRef, true]).then (value) =>
+        xenAPI.templateCollection.findOpaqueRef(@opaqueRef).then (template) ->
+          resolve(template)
+      .catch (e) ->
+        debug e
+        reject e
+
   VM.POWER_STATES =
     HALTED: 'Halted',
     PAUSED: 'Paused',

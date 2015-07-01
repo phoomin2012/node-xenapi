@@ -160,5 +160,15 @@ class Template
         debug e
         reject e
 
+  convertToVM: =>
+    debug "convertToVM()"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_is_a_template", [@opaqueRef, false]).then (value) =>
+        xenAPI.vmCollection.findOpaqueRef(@opaqueRef).then (vm) ->
+          resolve(vm)
+      .catch (e) ->
+        debug e
+        reject e
+
 
 module.exports = Template
