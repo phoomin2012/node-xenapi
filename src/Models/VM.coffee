@@ -208,7 +208,7 @@ class VM
         unless currentPowerState == VM.POWER_STATES.HALTED
           reject "VM not in #{VM.POWER_STATES.HALTED} power state."
         else
-          session.request("VM.copy", [@opaqueRef, name]).then (value) =>
+          session.request("VM.copy", [@opaqueRef, name, "OpaqueRef:NULL"]).then (value) =>
             xenAPI.vmCollection.findOpaqueRef(value).then (clonedVM) ->
               resolve clonedTemplate
             .catch (e) ->
