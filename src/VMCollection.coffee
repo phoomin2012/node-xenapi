@@ -101,4 +101,24 @@ class VMCollection
         debug e
         reject e
 
+  findUUID: (uuid) =>
+    debug "findUUID(#{uuid})"
+    new Promise (resolve, reject) =>
+      query = 'field "uuid"="' + uuid + '"'
+      session.request("VM.get_all_records_where", [query]).then (value) =>
+        unless value
+          reject()
+
+        debug "Received #{Object.keys(value).length} records"
+
+        VMs = _.map value, createVMInstance
+        filtered = _.filter VMs, (vm) -> vm
+        if filtered.length > 1
+          reject("Multiple VMs for UUID #{uuid}")
+        else
+          resolve filtered[0]
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VMCollection

@@ -67,15 +67,17 @@ class TemplateCollection
         reject e
 
   findUUID: (uuid) =>
-    debug "findUUID(#{uuid}"
+    debug "findUUID(#{uuid})"
     new Promise (resolve, reject) =>
-      @list().then (Templates) =>
-        matchTemplateUUID = (template) ->
-          if template.uuid == uuid
-            return template
+      query = 'field "uuid"="' + uuid + '"'
+      session.request("VM.get_all_records_where", [query]).then (value) =>
+        unless value
+          reject()
 
-        matches = _.map Templates, matchTemplateUUID
-        filtered = _.filter matches, (template) -> template
+        debug "Received #{Object.keys(value).length} records"
+
+        Templates = _.map value, createTemplateInstance
+        filtered = _.filter Templates, (template) -> template
         if filtered.length > 1
           reject("Multiple Templates for UUID #{uuid}")
         else
