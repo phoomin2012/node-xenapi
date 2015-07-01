@@ -201,6 +201,26 @@ class VM
         debug e
         reject e
 
+  clone: (name) =>
+    debug "clone(#{name})"
+    new Promise (resolve, reject) =>
+      @refreshPowerState().then (currentPowerState) =>
+        unless currentPowerState == VM.POWER_STATES.HALTED
+          reject "VM not in #{VM.POWER_STATES.HALTED} power state."
+        else
+          session.request("VM.copy", [@opaqueRef, name]).then (value) =>
+            xenAPI.vmCollection.findOpaqueRef(value).then (clonedVM) ->
+              resolve clonedTemplate
+            .catch (e) ->
+              debug e
+              reject e
+          .catch (e) ->
+            debug e
+            reject e
+      .catch (e) ->
+        debug e
+        reject e
+
   getVBDs: =>
     debug "getVBDs()"
     new Promise (resolve, reject) =>
