@@ -43,6 +43,7 @@ class VM
     @VIFs = _vm.VIFs || []
     @VBDs = _vm.VBDs || []
     @guest_metrics = _vm.guest_metrics
+    @metrics = _vm.metrics
     @ram = _vm.memory_static_max
     @vcpu = _vm.VCPUs_max
 
@@ -232,6 +233,15 @@ class VM
       Promise.all(vbdSearchPromises).then (vbdObjects) ->
         debug vbdObjects
         resolve(vbdObjects)
+      .catch (e) ->
+        debug e
+        reject e
+
+  getMetrics: =>
+    debug "getMetrics()"
+    new Promise (resolve, reject) =>
+      xenAPI.metricsCollection.findOpaqueRef(@metrics).then (metrics) =>
+        resolve(metrics);
       .catch (e) ->
         debug e
         reject e
