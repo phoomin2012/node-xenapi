@@ -51,6 +51,15 @@ class Template
       description: @description
     }
 
+  destroy: =>
+    debug "destroy()"
+    new Promise (resolve, reject) =>
+      session.request("VM.destroy", [@opaqueRef]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
   ###*
    * Clone this Template, creates a new Template
    * @param     {String}  name - A name for the new clone
