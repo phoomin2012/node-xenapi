@@ -62,6 +62,16 @@ class VM
       .catch (e) ->
         debug e
         reject e
+
+  rename: (name) =>
+    debug "rename(#{name})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_name_label", [@opaqueRef, name]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
   ###*
    * Refresh the power state of this VM
    * @return     {Promise}

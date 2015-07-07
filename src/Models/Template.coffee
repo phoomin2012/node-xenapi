@@ -60,6 +60,15 @@ class Template
         debug e
         reject e
 
+  rename: (name) =>
+    debug "rename(#{name})"
+    new Promise (resolve, reject) =>
+      session.request("VM.set_name_label", [@opaqueRef, name]).then (value) =>
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
   ###*
    * Clone this Template, creates a new Template
    * @param     {String}  name - A name for the new clone
@@ -178,6 +187,5 @@ class Template
       .catch (e) ->
         debug e
         reject e
-
 
 module.exports = Template
