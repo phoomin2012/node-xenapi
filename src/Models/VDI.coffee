@@ -57,4 +57,14 @@ class VDI
         debug e
         reject e
 
+  resize: (targetSize) =>
+    debug "resize(#{targetSize})"
+    new Promise (resolve, reject) =>
+      session.request("VDI.resize", [@opaqueRef, targetSize]).then (value) =>
+        debug value
+        resolve()
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VDI
