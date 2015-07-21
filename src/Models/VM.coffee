@@ -40,6 +40,7 @@ class VM
     @other_config = _vm.other_config
     @xenToolsInstalled = !(_vm.guest_metrics == 'OpaqueRef:NULL')
     @powerState = _vm.power_state
+    @consoles = _vm.consoles
     @VIFs = _vm.VIFs || []
     @VBDs = _vm.VBDs || []
     @guest_metrics = _vm.guest_metrics
@@ -252,6 +253,21 @@ class VM
     new Promise (resolve, reject) =>
       xenAPI.metricsCollection.findOpaqueRef(@metrics).then (metrics) =>
         resolve(metrics);
+      .catch (e) ->
+        debug e
+        reject e
+
+  getConsoles: =>
+    debug "getConsoles()"
+    new Promise (resolve, reject) =>
+      consoleSearchPromises = []
+      _.each @consoles, (console) ->
+        consoleSearchPromise = xenAPI.consoleCollection.findOpaqueRef(console)
+        consoleSearchPromises.push consoleSearchPromise
+
+      Promise.all(consoleSearchPromises).then (consoleObjects) ->
+        debug consoleObjects
+        resolve(consoleObjects)
       .catch (e) ->
         debug e
         reject e
