@@ -9,7 +9,7 @@ class TemplateCollection
   xenAPI = undefined
 
   createTemplateInstance = (template, opaqueRef) =>
-    if template.is_a_template && !template.is_control_domain
+    if template && template.is_a_template && !template.is_control_domain
       return new Template session, template, opaqueRef, xenAPI
 
   ###*
@@ -47,6 +47,25 @@ class TemplateCollection
         debug "Received #{Object.keys(value).length} records"
 
         Templates = _.map value, createTemplateInstance
+        resolve _.filter Templates, (template) -> template
+      .catch (e) ->
+        debug e
+        reject e
+
+  listCustom: =>
+    debug "listCustom()"
+    new Promise (resolve, reject) =>
+      query = 'field "is_a_template" = "true"'
+      session.request("VM.get_all_records_where", [query]).then (value) =>
+        unless value
+          reject()
+        debug "Received #{Object.keys(value).length} records"
+
+        filteredValues = _.mapValues value, (template) ->
+          if !template.other_config.default_template
+            return template
+
+        Templates = _.map filteredValues, createTemplateInstance
         resolve _.filter Templates, (template) -> template
       .catch (e) ->
         debug e
