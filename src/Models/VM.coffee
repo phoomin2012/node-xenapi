@@ -257,6 +257,15 @@ class VM
         debug e
         reject e
 
+  getGuestMetrics: =>
+    debug "getGuestMetrics()"
+    new Promise (resolve, reject) =>
+      xenAPI.guestMetricsCollection.findOpaqueRef(@guest_metrics).then (guest_metrics) =>
+        resolve(guest_metrics);
+      .catch (e) ->
+        debug e
+        reject e
+
   getConsoles: =>
     debug "getConsoles()"
     new Promise (resolve, reject) =>
