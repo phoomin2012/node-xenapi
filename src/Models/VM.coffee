@@ -248,6 +248,21 @@ class VM
         debug e
         reject e
 
+  getVIFs: =>
+    debug "getVIFs()"
+    new Promise (resolve, reject) =>
+      vifSearchPromises = []
+      _.each @VIFs, (vif) ->
+        vifSearchPromise = xenAPI.vifCollection.findOpaqueRef(vif)
+        vifSearchPromises.push vifSearchPromise
+
+      Promise.all(vifSearchPromises).then (vifObjects) ->
+        debug vifObjects
+        resolve(vifObjects)
+      .catch (e) ->
+        debug e
+        reject e
+
   getMetrics: =>
     debug "getMetrics()"
     new Promise (resolve, reject) =>

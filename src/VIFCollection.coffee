@@ -70,4 +70,17 @@ class VIFCollection
 
       resolve newVIF
 
+  findOpaqueRef: (opaqueRef) =>
+    debug "findOpaqueRef(#{opaqueRef})"
+    new Promise (resolve, reject) =>
+      session.request("VIF.get_record", [opaqueRef]).then (value) =>
+        unless value
+          reject()
+
+        vif = createVIFInstance value, opaqueRef
+        resolve vif
+      .catch (e) ->
+        debug e
+        reject e
+
 module.exports = VIFCollection
