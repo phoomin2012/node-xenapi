@@ -1,9 +1,10 @@
-node-xenapi
+xenapi3
 ----
+This module is add the missing api of xenapi2
+
 
 Usage
 ====
-
 ```javascript
 var xenapi = require("xenapi3")({
 	host: "xen-server",
