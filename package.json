@@ -1,6 +1,6 @@
 {
-  "name": "xenapi3",
-  "version": "3.0.30",
+  "name": "xenapi3-fix",
+  "version": "3.0.43",
   "description": "XenAPI bindings in Node.js",
   "main": "lib/index.js",
   "directories": {
@@ -31,7 +31,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/dave-irvine/node-xenapi.git"
+    "url": "git+ssh://git@github.com/phoomin2012/node-xenapi.git"
   },
   "author": "Phumin Chanthalert <phoomin009@gmail.com>",
   "license": "MIT"
