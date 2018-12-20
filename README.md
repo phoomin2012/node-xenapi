@@ -12,10 +12,34 @@ var xenapi = require("xenapi3")({
 });
 
 // Example get list of VM
-xenapi.session.login("username", "password")
-	.then(function () {
-		xenapi.vmCollection.list().then(function (vms) {
-			console.log(vms);
-		});
+xenapi.session.login("username", "password").then(function () {
+	xenapi.vmCollection.list().then(function (vms) {
+		console.log(vms);
 	});
+});
 ```
+
+Document
+====
+```javascript
+	xenAPI.host;
+	xenAPI.consoleCollection;
+	xenAPI.guestMetricsCollection;
+	xenAPI.metricsCollection;
+	xenAPI.networkCollection;
+	xenAPI.poolCollection;
+	xenAPI.srCollection;
+	xenAPI.taskCollection;
+	xenAPI.templateCollection;
+	xenAPI.vbdCollection;
+	xenAPI.vdiCollection;
+	xenAPI.vifCollection;
+	xenAPI.vlanCollection;
+	xenAPI.vmCollection;
+
+```
+More comming soon...
+
+Donate
+====
+https://paypal.me/PhuminShop
