@@ -1,6 +1,6 @@
 {
   "name": "xenapi3-fix",
-  "version": "3.1.7",
+  "version": "3.1.8",
   "description": "XenAPI bindings in Node.js",
   "main": "lib/index.js",
   "directories": {
