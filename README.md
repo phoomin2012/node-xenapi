@@ -6,7 +6,7 @@ This module is add the missing api of xenapi2
 Usage
 ====
 ```javascript
-var xenapi = require("xenapi3")({
+const xenapi = require("xenapi3-fix")({
 	host: "xen-server",
 	port: "80"
 });
